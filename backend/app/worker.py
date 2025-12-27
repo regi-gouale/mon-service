@@ -4,9 +4,9 @@ Celery Worker Configuration.
 This module configures the Celery worker for background task processing.
 """
 
-from typing import Any
+from typing import cast
 
-from celery import Celery
+from celery import Celery, Task
 
 from app.core.config import settings
 
@@ -35,8 +35,14 @@ celery_app.conf.update(
 celery_app.autodiscover_tasks(["app.workers.tasks"])
 
 
-@celery_app.task(bind=True)  # type: ignore[misc]
-def debug_task(self: Any) -> str:
+def _debug_task_impl(self: Task) -> str:
     """Debug task for testing Celery connection."""
     print(f"Request: {self.request!r}")
     return "pong"
+
+
+# Register the task with proper typing
+debug_task = cast(
+    "Task[[], str]",
+    celery_app.task(bind=True, name="debug_task")(_debug_task_impl),
+)
