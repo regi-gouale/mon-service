@@ -113,7 +113,7 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
   - Hashing bcrypt pour passwords
   - Génération JWT avec python-jose
   - Validation tokens
-- [ ] **T1.1.2** Créer `app/schemas/auth.py`:
+- [x] **T1.1.2** Créer `app/schemas/auth.py`:
   - `RegisterRequest`, `LoginRequest`, `AuthResponse`
   - `TokenPayload`, `RefreshTokenRequest`
 - [ ] **T1.1.3** Créer `app/repositories/user_repository.py`:
