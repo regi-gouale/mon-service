@@ -317,3 +317,63 @@ class MessageResponse(BaseModel):
         ...,
         description="Response message",
     )
+
+
+class GoogleAuthRequest(BaseModel):
+    """
+    Schema for Google OAuth authentication request.
+
+    Attributes:
+        id_token: The Google ID token obtained from Google Sign-In
+    """
+
+    id_token: str = Field(
+        ...,
+        min_length=1,
+        description="Google ID token from Google Sign-In",
+        examples=["eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."],
+    )
+
+
+class GoogleUserInfo(BaseModel):
+    """
+    Schema for Google user profile information extracted from ID token.
+
+    Attributes:
+        sub: Google user ID (unique identifier)
+        email: User's email address
+        email_verified: Whether Google has verified the email
+        name: User's full name
+        given_name: User's first name
+        family_name: User's last name
+        picture: URL to user's profile picture
+    """
+
+    sub: str = Field(
+        ...,
+        description="Google user ID",
+    )
+    email: EmailStr = Field(
+        ...,
+        description="User's email address",
+    )
+    email_verified: bool = Field(
+        default=False,
+        description="Whether Google has verified the email",
+    )
+    name: str | None = Field(
+        default=None,
+        description="User's full name",
+    )
+    given_name: str | None = Field(
+        default=None,
+        description="User's first name",
+    )
+    family_name: str | None = Field(
+        default=None,
+        description="User's last name",
+    )
+    picture: str | None = Field(
+        default=None,
+        description="URL to user's profile picture",
+    )

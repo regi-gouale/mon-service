@@ -20,6 +20,7 @@ from app.core.logging import get_logger
 from app.schemas.auth import (
     AuthResponse,
     ForgotPasswordRequest,
+    GoogleAuthRequest,
     LoginRequest,
     MessageResponse,
     RefreshTokenRequest,
@@ -178,6 +179,82 @@ async def login(
         logger.warning(
             "Login failed",
             extra={"email": data.email, "reason": e.message},
+        )
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=e.message,
+            headers={"WWW-Authenticate": "Bearer"},
+        ) from e
+
+
+@router.post(
+    "/google",
+    response_model=AuthResponse,
+    summary="Authenticate with Google",
+    description="""
+    Authenticate a user using a Google ID token obtained from Google Sign-In.
+
+    This endpoint validates the Google ID token, extracts user profile information,
+    and either creates a new account or links to an existing account.
+
+    **Flow**:
+    1. Frontend obtains an ID token from Google Sign-In
+    2. Frontend sends the ID token to this endpoint
+    3. Backend validates the token with Google's API
+    4. Backend creates/links user account
+    5. Backend returns JWT access and refresh tokens
+
+    Returns access and refresh tokens upon successful authentication.
+    """,
+    responses={
+        200: {
+            "description": "Successfully authenticated with Google",
+            "model": AuthResponse,
+        },
+        401: {
+            "description": "Invalid or expired Google ID token",
+            "content": {
+                "application/json": {"example": {"detail": "Invalid Google ID token"}}
+            },
+        },
+        503: {
+            "description": "Google OAuth not configured",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Google OAuth is not configured"}
+                }
+            },
+        },
+    },
+)
+async def google_auth(
+    data: GoogleAuthRequest,
+    auth_service: AuthServiceDep,
+) -> AuthResponse:
+    """
+    Authenticate a user with Google OAuth.
+
+    Validates the Google ID token, creates or links user account,
+    and returns JWT tokens.
+    """
+    try:
+        result = await auth_service.google_login(data.id_token)
+        logger.info("User authenticated via Google OAuth")
+        return result
+    except ValueError as e:
+        # Google OAuth not configured
+        logger.error(
+            "Google OAuth configuration error",
+            extra={"error": str(e)},
+        )
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=str(e),
+        ) from e
+    except UnauthorizedError as e:
+        logger.warning(
+            "Google OAuth authentication failed",
+            extra={"reason": e.message},
         )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

@@ -7,9 +7,12 @@ and token management operations.
 
 import secrets
 from datetime import UTC, datetime, timedelta
-from typing import cast
+from typing import Any, cast
 
 import jwt
+from google.auth.exceptions import GoogleAuthError
+from google.auth.transport import requests as google_requests
+from google.oauth2 import id_token as google_id_token
 from sqlalchemy import CursorResult, delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -32,6 +35,7 @@ from app.models.user import UserRole
 from app.repositories.user_repository import UserRepository
 from app.schemas.auth import (
     AuthResponse,
+    GoogleUserInfo,
     RegisterRequest,
     UserResponse,
 )
@@ -707,3 +711,174 @@ class AuthService:
         )
 
         return deleted_count
+
+    async def google_login(self, id_token_str: str) -> AuthResponse:
+        """
+        Authenticate a user using a Google ID token.
+
+        Validates the Google ID token, extracts user profile information,
+        creates a new user account if needed or links to existing account,
+        and returns authentication tokens.
+
+        Args:
+            id_token_str: The Google ID token from Google Sign-In.
+
+        Returns:
+            AuthResponse: Access token, refresh token, and user data.
+
+        Raises:
+            UnauthorizedError: If the ID token is invalid or expired.
+            ValueError: If Google OAuth is not configured.
+        """
+        logger.info("Processing Google OAuth login request")
+
+        # Check if Google OAuth is configured
+        if not settings.google_oauth_configured:
+            logger.error("Google OAuth is not configured")
+            raise ValueError(
+                "Google OAuth is not configured. "
+                "Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET."
+            )
+
+        # Verify the Google ID token
+        try:
+            google_user_info = await self._verify_google_id_token(id_token_str)
+        except GoogleAuthError as e:
+            logger.warning(
+                "Google ID token verification failed",
+                extra={"error": str(e)},
+            )
+            raise UnauthorizedError(message="Invalid Google ID token") from e
+        except ValueError as e:
+            logger.warning(
+                "Google ID token validation failed",
+                extra={"error": str(e)},
+            )
+            raise UnauthorizedError(message="Invalid or expired Google ID token") from e
+
+        # Check if user already exists with this email
+        user = await self.user_repository.get_by_email(google_user_info.email)
+
+        if user:
+            # User exists - update profile from Google if needed
+            logger.info(
+                "Existing user logging in via Google",
+                extra={"user_id": user.id, "email": user.email},
+            )
+
+            # Update avatar if not set and Google provides one
+            if not user.avatar_url and google_user_info.picture:
+                await self.user_repository.update(
+                    user.id,
+                    avatar_url=google_user_info.picture,
+                )
+
+            # Mark email as verified since Google verified it
+            if not user.email_verified and google_user_info.email_verified:
+                await self.user_repository.update(
+                    user.id,
+                    email_verified=True,
+                )
+
+            # Check if account is active
+            if not user.is_active:
+                logger.warning(
+                    "Google login failed: account inactive",
+                    extra={"user_id": user.id, "email": user.email},
+                )
+                raise UnauthorizedError(message="Account is deactivated")
+
+            # Update last login timestamp
+            await self.user_repository.update_last_login(user.id)
+        else:
+            # Create new user from Google profile
+            logger.info(
+                "Creating new user from Google OAuth",
+                extra={"email": google_user_info.email},
+            )
+
+            user = await self.user_repository.create(
+                email=google_user_info.email,
+                password_hash=None,  # No password for OAuth users
+                first_name=google_user_info.given_name
+                or google_user_info.name
+                or "User",
+                last_name=google_user_info.family_name or "",
+                organization_id=None,
+                role=UserRole.MEMBER,
+                avatar_url=google_user_info.picture,
+                email_verified=google_user_info.email_verified,
+                is_active=True,
+            )
+
+        # Generate tokens
+        access_token = create_access_token(subject=user.id)
+        refresh_token_str = create_refresh_token(subject=user.id)
+
+        # Store refresh token
+        await self._store_refresh_token(user.id, refresh_token_str)
+
+        # Commit the transaction
+        await self.session.commit()
+
+        logger.info(
+            "User authenticated via Google OAuth",
+            extra={"user_id": user.id, "email": user.email},
+        )
+
+        return AuthResponse(
+            access_token=access_token,
+            refresh_token=refresh_token_str,
+            token_type="bearer",
+            user=UserResponse(
+                id=user.id,
+                email=user.email,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                role=user.role.value if isinstance(user.role, UserRole) else user.role,
+                email_verified=user.email_verified,
+                avatar_url=user.avatar_url,
+                created_at=user.created_at,
+            ),
+        )
+
+    async def _verify_google_id_token(self, id_token_str: str) -> GoogleUserInfo:
+        """
+        Verify a Google ID token and extract user information.
+
+        Args:
+            id_token_str: The encoded Google ID token.
+
+        Returns:
+            GoogleUserInfo: The extracted user profile information.
+
+        Raises:
+            GoogleAuthError: If the issuer is invalid.
+            ValueError: If token verification fails.
+        """
+        # Create a request object for token verification
+        request = google_requests.Request()
+
+        # Verify the ID token with Google's public keys
+        # The audience should be the Google Client ID
+        id_info: dict[str, Any] = google_id_token.verify_oauth2_token(
+            id_token_str,
+            request,
+            audience=settings.google_client_id,
+            clock_skew_in_seconds=30,  # Allow 30 seconds of clock skew
+        )
+
+        logger.debug(
+            "Google ID token verified successfully",
+            extra={"google_user_id": id_info.get("sub")},
+        )
+
+        return GoogleUserInfo(
+            sub=id_info["sub"],
+            email=id_info["email"],
+            email_verified=id_info.get("email_verified", False),
+            name=id_info.get("name"),
+            given_name=id_info.get("given_name"),
+            family_name=id_info.get("family_name"),
+            picture=id_info.get("picture"),
+        )
