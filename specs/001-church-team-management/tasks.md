@@ -128,7 +128,7 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
   - POST `/auth/logout`
   - POST `/auth/forgot-password`
   - POST `/auth/reset-password`
-- [ ] **T1.1.6** Créer middleware d'authentification `get_current_user`
+- [x] **T1.1.6** Créer middleware d'authentification `get_current_user`
 
 📦 Endpoints auth fonctionnels avec JWT
 
