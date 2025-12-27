@@ -42,7 +42,7 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
 ### T0.2 - Setup Backend FastAPI ⏱️ 6h 🔴
 
 - [x] **T0.2.1** Initialiser projet Python avec `pyproject.toml` et `uv`
-- [ ] **T0.2.2** Créer structure Clean Architecture:
+- [x] **T0.2.2** Créer structure Clean Architecture:
   ```
   app/api/v1/routes/
   app/core/
@@ -51,8 +51,8 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
   app/models/
   app/schemas/
   ```
-- [ ] **T0.2.3** Configurer `app/core/config.py` avec Pydantic Settings
-- [ ] **T0.2.4** Configurer SQLAlchemy 2.0 async avec `app/core/database.py`
+- [x] **T0.2.3** Configurer `app/core/config.py` avec Pydantic Settings
+- [x] **T0.2.4** Configurer SQLAlchemy 2.0 async avec `app/core/database.py`
 - [ ] **T0.2.5** Configurer Alembic pour les migrations
 - [ ] **T0.2.6** Créer le fichier `app/main.py` avec CORS et middleware
 - [ ] **T0.2.7** Configurer logging JSON structuré avec correlation_id
