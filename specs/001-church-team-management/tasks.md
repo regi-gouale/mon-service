@@ -61,7 +61,7 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
 
 ### T0.3 - Setup Frontend Next.js ⏱️ 6h 🔴
 
-- [ ] **T0.3.1** Initialiser projet Next.js 14+ avec App Router et TypeScript strict
+- [x] **T0.3.1** Initialiser projet Next.js 14+ avec App Router et TypeScript strict
 - [ ] **T0.3.2** Configurer TailwindCSS et Shadcn/ui
 - [ ] **T0.3.3** Créer structure dossiers:
   ```
