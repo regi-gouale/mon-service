@@ -78,6 +78,9 @@ ignore_missing_imports = true
 asyncio_mode = "auto"
 testpaths = ["tests"]
 addopts = "-v --cov=app --cov-report=term-missing"
+markers = [
+    "integration: marks tests as integration tests (require running PostgreSQL)",
+]
 
 [tool.coverage.run]
 source = ["app"]
