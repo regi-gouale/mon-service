@@ -11,7 +11,6 @@ Requirements:
 """
 
 import argparse
-import json
 import os
 import re
 import sys
@@ -116,12 +115,12 @@ class GitHubIssueCreator:
 
     def __init__(self, token: str, owner: str, repo: str, dry_run: bool = False):
         self.dry_run = dry_run
-        self.g = Github(token) if not dry_run else None
+        self.g: Optional[Github] = Github(token) if not dry_run else None
         self.repo = None
         self.owner = owner
         self.repo_name = repo
 
-        if not dry_run:
+        if not dry_run and self.g is not None:
             try:
                 self.repo = self.g.get_user(owner).get_repo(repo)
                 print(f"✓ Connected to {owner}/{repo}")
@@ -139,6 +138,9 @@ class GitHubIssueCreator:
                 print(f"  - {labels['name']}")
             for label in EPIC_LABEL_MAP.values():
                 print(f"  - {label}")
+            return
+
+        if self.repo is None:
             return
 
         existing_labels = {label.name for label in self.repo.get_labels()}
@@ -184,13 +186,16 @@ class GitHubIssueCreator:
             labels.append(f"effort:{effort_label}")
 
         if self.dry_run:
-            print(f"\n[DRY-RUN] Would create issue:")
-            print(f"  Title: {title}")
-            print(f"  Epic: {epic}")
-            print(f"  Priority: {priority}")
-            print(f"  Labels: {', '.join(labels)}")
-            print(f"  Body preview: {body[:100]}...")
+            print("\n[DRY-RUN] Would create issue:")
+            print("  Title: " + title)
+            print("  Epic: " + epic)
+            print("  Priority: " + priority)
+            print("  Labels: " + ", ".join(labels))
+            print("  Body preview: " + body[:100] + "...")
             return True
+
+        if self.repo is None:
+            return False
 
         try:
             self.repo.create_issue(
@@ -219,6 +224,7 @@ class GitHubIssueCreator:
 
 
 def main():
+    """Main entry point"""
     parser = argparse.ArgumentParser(
         description="Import GitHub issues from tasks markdown"
     )
@@ -234,10 +240,10 @@ def main():
         default="specs/001-church-team-management/github-issues.md",
         help="Path to github-issues.md file",
     )
-    parser.add_argument("--dry-run", action="store_true", help="Preview without creating")
     parser.add_argument(
-        "--limit", type=int, help="Limit number of issues to create"
+        "--dry-run", action="store_true", help="Preview without creating"
     )
+    parser.add_argument("--limit", type=int, help="Limit number of issues to create")
 
     args = parser.parse_args()
 
@@ -254,12 +260,12 @@ def main():
         sys.exit(1)
 
     print(f"\n{'='*60}")
-    print(f"GitHub Issues Import Tool")
+    print("GitHub Issues Import Tool")
     print(f"{'='*60}")
     print(f"Repository: {args.owner}/{args.repo}")
     print(f"File: {args.file}")
     if args.dry_run:
-        print(f"Mode: DRY-RUN (preview only)")
+        print("Mode: DRY-RUN (preview only)")
     print(f"{'='*60}\n")
 
     # Parse issues
@@ -279,17 +285,17 @@ def main():
 
     # Summary
     print(f"\n{'='*60}")
-    print(f"Summary")
+    print("Summary")
     print(f"{'='*60}")
     print(f"Total: {stats['total']}")
     print(f"Created: {stats['created']}")
     print(f"Failed: {stats['failed']}")
 
     if args.dry_run:
-        print(f"\n✓ Dry-run complete. No issues created.")
-        print(f"Run without --dry-run to create issues.")
+        print("\n✓ Dry-run complete. No issues created.")
+        print("Run without --dry-run to create issues.")
     else:
-        print(f"\n✓ Issues created successfully!")
+        print("\n✓ Issues created successfully!")
 
     print(f"{'='*60}\n")
 
