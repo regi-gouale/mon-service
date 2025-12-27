@@ -5,8 +5,10 @@
 
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
 import { useAuthStore } from "@/stores/auth";
+import { IconBell, IconLoader2, IconUser } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { ReactNode, useEffect } from "react";
 
@@ -32,8 +34,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="border-primary mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2"></div>
-          <p className="text-gray-600 dark:text-gray-400">{t("loading")}</p>
+          <IconLoader2 className="text-primary mx-auto mb-4 h-12 w-12 animate-spin" />
+          <p className="text-muted-foreground">{t("loading")}</p>
         </div>
       </div>
     );
@@ -45,24 +47,22 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="bg-background min-h-screen">
       {/* Header */}
-      <header className="border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+      <header className="bg-card border-b">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center">
-              <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Mon Service</h1>
+              <h1 className="text-foreground text-xl font-semibold">Mon Service</h1>
             </div>
 
-            <nav className="flex items-center space-x-4">
-              <button className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-                <span className="sr-only">{tNav("notifications")}</span>
-                🔔
-              </button>
-              <button className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-                <span className="sr-only">{tNav("profile")}</span>
-                👤
-              </button>
+            <nav className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" aria-label={tNav("notifications")}>
+                <IconBell className="h-5 w-5" />
+              </Button>
+              <Button variant="ghost" size="icon" aria-label={tNav("profile")}>
+                <IconUser className="h-5 w-5" />
+              </Button>
             </nav>
           </div>
         </div>
@@ -72,9 +72,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">{children}</main>
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+      <footer className="bg-card mt-auto border-t">
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-          <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-muted-foreground text-center text-sm">
             © 2025 Mon Service. Tous droits réservés.
           </p>
         </div>

@@ -6,6 +6,7 @@
 "use client";
 
 import { useAuthStore } from "@/stores/auth";
+import { IconLoader2 } from "@tabler/icons-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
 import { toast } from "sonner";
@@ -38,10 +39,10 @@ function AuthCallbackContent() {
   }, [searchParams, router, setLoginState]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="bg-background flex min-h-screen items-center justify-center">
       <div className="text-center">
-        <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
-        <p className="text-gray-600 dark:text-gray-400">Connexion en cours...</p>
+        <IconLoader2 className="text-primary mx-auto mb-4 h-8 w-8 animate-spin" />
+        <p className="text-muted-foreground">Connexion en cours...</p>
       </div>
     </div>
   );
@@ -51,10 +52,10 @@ export default function AuthCallbackPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center">
+        <div className="bg-background flex min-h-screen items-center justify-center">
           <div className="text-center">
-            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
-            <p className="text-gray-600 dark:text-gray-400">Chargement...</p>
+            <IconLoader2 className="text-primary mx-auto mb-4 h-8 w-8 animate-spin" />
+            <p className="text-muted-foreground">Chargement...</p>
           </div>
         </div>
       }

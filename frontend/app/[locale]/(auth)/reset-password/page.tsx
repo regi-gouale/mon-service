@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "@/i18n/navigation";
+import { IconCheck, IconLoader2, IconX } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
@@ -81,27 +82,11 @@ function ResetPasswordForm() {
     return (
       <div className="space-y-6">
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
-            <svg
-              className="h-6 w-6 text-red-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+          <div className="bg-destructive/10 mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+            <IconX className="text-destructive h-6 w-6" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            {t("invalidResetLink")}
-          </h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            {t("invalidResetLinkDescription")}
-          </p>
+          <h2 className="text-foreground text-2xl font-bold">{t("invalidResetLink")}</h2>
+          <p className="text-muted-foreground mt-2 text-sm">{t("invalidResetLinkDescription")}</p>
         </div>
 
         <Link href="/forgot-password" className="block">
@@ -111,10 +96,7 @@ function ResetPasswordForm() {
         </Link>
 
         <div className="text-center">
-          <Link
-            href="/login"
-            className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
-          >
+          <Link href="/login" className="text-primary text-sm font-medium hover:underline">
             {t("backToLogin")}
           </Link>
         </div>
@@ -126,25 +108,11 @@ function ResetPasswordForm() {
     return (
       <div className="space-y-6">
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-            <svg
-              className="h-6 w-6 text-green-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10">
+            <IconCheck className="h-6 w-6 text-green-600" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            {t("passwordResetSuccess")}
-          </h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          <h2 className="text-foreground text-2xl font-bold">{t("passwordResetSuccess")}</h2>
+          <p className="text-muted-foreground mt-2 text-sm">
             {t("passwordResetSuccessDescription")}
           </p>
         </div>
@@ -159,12 +127,8 @@ function ResetPasswordForm() {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          {t("resetPasswordTitle")}
-        </h2>
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-          {t("resetPasswordDescription")}
-        </p>
+        <h2 className="text-foreground text-2xl font-bold">{t("resetPasswordTitle")}</h2>
+        <p className="text-muted-foreground mt-2 text-sm">{t("resetPasswordDescription")}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -180,7 +144,7 @@ function ResetPasswordForm() {
             required
             disabled={isLoading}
           />
-          {errors.password && <p className="text-sm text-red-600">{errors.password}</p>}
+          {errors.password && <p className="text-destructive text-sm">{errors.password}</p>}
         </div>
 
         <div className="space-y-2">
@@ -196,20 +160,24 @@ function ResetPasswordForm() {
             disabled={isLoading}
           />
           {errors.confirmPassword && (
-            <p className="text-sm text-red-600">{errors.confirmPassword}</p>
+            <p className="text-destructive text-sm">{errors.confirmPassword}</p>
           )}
         </div>
 
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? tCommon("loading") : t("resetPassword")}
+          {isLoading ? (
+            <>
+              <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+              {tCommon("loading")}
+            </>
+          ) : (
+            t("resetPassword")
+          )}
         </Button>
       </form>
 
       <div className="text-center">
-        <Link
-          href="/login"
-          className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
-        >
+        <Link href="/login" className="text-primary text-sm font-medium hover:underline">
           {t("backToLogin")}
         </Link>
       </div>
@@ -219,7 +187,13 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={<div className="flex justify-center p-8">Chargement...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex justify-center p-8">
+          <IconLoader2 className="text-primary h-8 w-8 animate-spin" />
+        </div>
+      }
+    >
       <ResetPasswordForm />
     </Suspense>
   );

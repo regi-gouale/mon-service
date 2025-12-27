@@ -8,6 +8,7 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "@/i18n/navigation";
+import { IconCheck, IconLoader2, IconX } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { Suspense, startTransition, useCallback, useEffect, useRef, useState } from "react";
@@ -55,9 +56,9 @@ function VerifyEmailContent() {
   if (status === "loading" || isLoading) {
     return (
       <div className="space-y-6 text-center">
-        <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t("verifyingEmail")}</h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400">{t("pleaseWait")}</p>
+        <IconLoader2 className="text-primary mx-auto h-12 w-12 animate-spin" />
+        <h2 className="text-foreground text-2xl font-bold">{t("verifyingEmail")}</h2>
+        <p className="text-muted-foreground text-sm">{t("pleaseWait")}</p>
       </div>
     );
   }
@@ -66,25 +67,11 @@ function VerifyEmailContent() {
     return (
       <div className="space-y-6">
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
-            <svg
-              className="h-6 w-6 text-red-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+          <div className="bg-destructive/10 mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+            <IconX className="text-destructive h-6 w-6" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            {t("verificationFailed")}
-          </h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{errorMessage}</p>
+          <h2 className="text-foreground text-2xl font-bold">{t("verificationFailed")}</h2>
+          <p className="text-muted-foreground mt-2 text-sm">{errorMessage}</p>
         </div>
 
         <div className="space-y-3">
@@ -104,20 +91,11 @@ function VerifyEmailContent() {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-          <svg
-            className="h-6 w-6 text-green-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10">
+          <IconCheck className="h-6 w-6 text-green-600" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t("emailVerified")}</h2>
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-          {t("emailVerifiedDescription")}
-        </p>
+        <h2 className="text-foreground text-2xl font-bold">{t("emailVerified")}</h2>
+        <p className="text-muted-foreground mt-2 text-sm">{t("emailVerifiedDescription")}</p>
       </div>
 
       <Link href="/login" className="block">
@@ -132,7 +110,7 @@ export default function VerifyEmailPage() {
     <Suspense
       fallback={
         <div className="flex justify-center p-8">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
+          <IconLoader2 className="text-primary h-8 w-8 animate-spin" />
         </div>
       }
     >
