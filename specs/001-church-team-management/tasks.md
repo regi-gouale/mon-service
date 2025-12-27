@@ -136,8 +136,8 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
 
 - [x] **T1.2.1** Configurer variables OAuth (GOOGLE_CLIENT_ID, etc.)
 - [x] **T1.2.2** Créer endpoint POST `/auth/google` pour valider id_token
-- [ ] **T1.2.3** Créer ou lier compte utilisateur depuis profil Google
-- [ ] **T1.2.4** Générer JWT après validation OAuth
+- [x] **T1.2.3** Créer ou lier compte utilisateur depuis profil Google
+- [x] **T1.2.4** Générer JWT après validation OAuth
 
 📦 Connexion Google fonctionnelle
 
