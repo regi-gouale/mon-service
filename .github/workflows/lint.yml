@@ -1,0 +1,131 @@
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.13"
+  NODE_VERSION: "20"
+
+jobs:
+  lint-backend:
+    name: Backend Lint (Ruff + MyPy)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: "backend/pyproject.toml"
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        working-directory: backend
+        run: uv sync --dev
+
+      - name: Run Ruff linter
+        working-directory: backend
+        run: uv run ruff check app tests --output-format=github
+
+      - name: Run Ruff format check
+        working-directory: backend
+        run: uv run ruff format --check app tests
+
+      - name: Run MyPy type checker
+        working-directory: backend
+        run: uv run mypy app --ignore-missing-imports
+
+  lint-frontend:
+    name: Frontend Lint (ESLint + Prettier)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+
+      - name: Run ESLint
+        working-directory: frontend
+        run: pnpm lint
+
+      - name: Run Prettier check
+        working-directory: frontend
+        run: pnpm format:check
+
+      - name: Run TypeScript type check
+        working-directory: frontend
+        run: pnpm typecheck
+
+  lint-commits:
+    name: Commit Messages (Commitlint)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install commitlint
+        run: |
+          pnpm add -g @commitlint/cli @commitlint/config-conventional
+
+      - name: Validate PR commits
+        run: |
+          npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+
+  lint-status:
+    name: Lint Status Check
+    runs-on: ubuntu-latest
+    needs: [lint-backend, lint-frontend]
+    if: always()
+
+    steps:
+      - name: Check lint results
+        run: |
+          if [[ "${{ needs.lint-backend.result }}" == "failure" ]] || [[ "${{ needs.lint-frontend.result }}" == "failure" ]]; then
+            echo "❌ Lint checks failed. Please fix the issues before merging."
+            exit 1
+          fi
+          echo "✅ All lint checks passed!"
