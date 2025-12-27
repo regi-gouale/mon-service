@@ -1,0 +1,38 @@
+{% extends "email/base.html" %} {% block content %}
+<h1>Bienvenue dans l'équipe !</h1>
+
+<p>Bonjour {{ user_name }},</p>
+
+<p>
+  Vous avez été invité(e) à rejoindre
+  <strong>{{ organization_name }}</strong> sur {{ app_name }} en tant que membre
+  de l'équipe <strong>{{ department_name }}</strong>.
+</p>
+
+<p>
+  Cliquez sur le bouton ci-dessous pour accepter l'invitation et configurer
+  votre compte.
+</p>
+
+<div class="button-container">
+  <a href="{{ invitation_url }}" class="button"> Accepter l'invitation </a>
+</div>
+
+<p>
+  Si le bouton ne fonctionne pas, vous pouvez copier et coller le lien suivant
+  dans votre navigateur :
+</p>
+
+<p class="link">{{ invitation_url }}</p>
+
+<div class="warning">
+  <strong>⏰ Important :</strong> Cette invitation expire dans {{
+  expiration_days }} jours. Si vous n'attendiez pas cette invitation, vous
+  pouvez ignorer cet email.
+</div>
+
+<p>
+  À bientôt,<br />
+  L'équipe {{ app_name }}
+</p>
+{% endblock %}

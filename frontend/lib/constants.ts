@@ -42,6 +42,7 @@ export const ENDPOINTS = {
     FORGOT_PASSWORD: `${API_BASE_PATH}/auth/forgot-password`,
     RESET_PASSWORD: `${API_BASE_PATH}/auth/reset-password`,
     VERIFY_EMAIL: `${API_BASE_PATH}/auth/verify-email`,
+    GOOGLE: `${API_BASE_PATH}/auth/google`,
   },
   USERS: {
     ME: `${API_BASE_PATH}/users/me`,
@@ -118,6 +119,7 @@ export const ERROR_MESSAGES = {
 // Success Messages
 export const SUCCESS_MESSAGES = {
   LOGIN_SUCCESS: "Connexion réussie",
+  GOOGLE_LOGIN_SUCCESS: "Connexion avec Google réussie",
   REGISTER_SUCCESS: "Inscription réussie",
   PROFILE_UPDATED: "Profil mis à jour",
   AVAILABILITY_SAVED: "Disponibilités enregistrées",

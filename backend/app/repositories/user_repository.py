@@ -214,6 +214,8 @@ class UserRepository:
         organization_id: str | None = None,
         notification_preferences: dict[str, Any] | None = None,
         last_login_at: datetime | None = None,
+        updated_at: datetime | None = None,
+        deleted_at: datetime | None = None,
     ) -> User:
         """
         Update a user's information.
@@ -234,6 +236,8 @@ class UserRepository:
             organization_id: New organization ID.
             notification_preferences: New notification preferences.
             last_login_at: Last login timestamp.
+            updated_at: Last update timestamp.
+            deleted_at: Deletion timestamp for soft delete.
 
         Returns:
             User: The updated user instance.
@@ -272,6 +276,10 @@ class UserRepository:
             update_data["notification_preferences"] = notification_preferences
         if last_login_at is not None:
             update_data["last_login_at"] = last_login_at
+        if updated_at is not None:
+            update_data["updated_at"] = updated_at
+        if deleted_at is not None:
+            update_data["deleted_at"] = deleted_at
 
         if not update_data:
             return user

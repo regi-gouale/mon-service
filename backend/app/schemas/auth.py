@@ -23,6 +23,8 @@ class RegisterRequest(BaseModel):
         last_name: User's last name
     """
 
+    model_config = {"populate_by_name": True}
+
     email: EmailStr = Field(
         ...,
         description="User's email address",
@@ -37,6 +39,7 @@ class RegisterRequest(BaseModel):
     )
     first_name: str = Field(
         ...,
+        alias="firstName",
         min_length=1,
         max_length=100,
         description="User's first name",
@@ -44,6 +47,7 @@ class RegisterRequest(BaseModel):
     )
     last_name: str = Field(
         ...,
+        alias="lastName",
         min_length=1,
         max_length=100,
         description="User's last name",
@@ -160,10 +164,13 @@ class UserResponse(BaseModel):
         first_name: User's first name
         last_name: User's last name
         role: User's role
+        organization_id: User's organization ID
         email_verified: Whether email is verified
         avatar_url: URL to user's avatar (optional)
         created_at: Account creation timestamp
     """
+
+    model_config = {"from_attributes": True, "populate_by_name": True}
 
     id: str = Field(
         ...,
@@ -175,30 +182,38 @@ class UserResponse(BaseModel):
     )
     first_name: str = Field(
         ...,
+        serialization_alias="firstName",
         description="User's first name",
     )
     last_name: str = Field(
         ...,
+        serialization_alias="lastName",
         description="User's last name",
     )
     role: str = Field(
         ...,
         description="User's role (admin, manager, member, guest)",
     )
+    organization_id: str | None = Field(
+        default=None,
+        serialization_alias="organizationId",
+        description="User's organization ID",
+    )
     email_verified: bool = Field(
         default=False,
+        serialization_alias="isEmailVerified",
         description="Whether the user's email is verified",
     )
     avatar_url: str | None = Field(
         default=None,
+        serialization_alias="avatarUrl",
         description="URL to user's avatar image",
     )
     created_at: datetime = Field(
         ...,
+        serialization_alias="createdAt",
         description="Account creation timestamp",
     )
-
-    model_config = {"from_attributes": True}
 
 
 class AuthResponse(BaseModel):
@@ -214,16 +229,21 @@ class AuthResponse(BaseModel):
         user: User data
     """
 
+    model_config = {"populate_by_name": True}
+
     access_token: str = Field(
         ...,
+        serialization_alias="accessToken",
         description="JWT access token",
     )
     refresh_token: str = Field(
         ...,
+        serialization_alias="refreshToken",
         description="JWT refresh token",
     )
     token_type: Literal["bearer"] = Field(
         default="bearer",
+        serialization_alias="tokenType",
         description="Token type",
     )
     user: UserResponse = Field(
@@ -316,4 +336,64 @@ class MessageResponse(BaseModel):
     message: str = Field(
         ...,
         description="Response message",
+    )
+
+
+class GoogleAuthRequest(BaseModel):
+    """
+    Schema for Google OAuth authentication request.
+
+    Attributes:
+        id_token: The Google ID token obtained from Google Sign-In
+    """
+
+    id_token: str = Field(
+        ...,
+        min_length=1,
+        description="Google ID token from Google Sign-In",
+        examples=["eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."],
+    )
+
+
+class GoogleUserInfo(BaseModel):
+    """
+    Schema for Google user profile information extracted from ID token.
+
+    Attributes:
+        sub: Google user ID (unique identifier)
+        email: User's email address
+        email_verified: Whether Google has verified the email
+        name: User's full name
+        given_name: User's first name
+        family_name: User's last name
+        picture: URL to user's profile picture
+    """
+
+    sub: str = Field(
+        ...,
+        description="Google user ID",
+    )
+    email: EmailStr = Field(
+        ...,
+        description="User's email address",
+    )
+    email_verified: bool = Field(
+        default=False,
+        description="Whether Google has verified the email",
+    )
+    name: str | None = Field(
+        default=None,
+        description="User's full name",
+    )
+    given_name: str | None = Field(
+        default=None,
+        description="User's first name",
+    )
+    family_name: str | None = Field(
+        default=None,
+        description="User's last name",
+    )
+    picture: str | None = Field(
+        default=None,
+        description="URL to user's profile picture",
     )

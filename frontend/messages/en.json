@@ -18,18 +18,23 @@
     "no": "No",
     "required": "Required",
     "optional": "Optional",
-    "actions": "Actions"
+    "actions": "Actions",
+    "app": "Team Management"
   },
   "Navigation": {
     "home": "Home",
     "dashboard": "Dashboard",
     "team": "Team",
+    "teams": "Teams",
     "planning": "Planning",
     "availability": "Availability",
     "notifications": "Notifications",
     "settings": "Settings",
     "profile": "Profile",
-    "logout": "Logout"
+    "logout": "Logout",
+    "navigation": "Navigation",
+    "more": "More",
+    "tasks": "Tasks"
   },
   "Auth": {
     "login": "Login",
@@ -57,7 +62,31 @@
     "loginSuccess": "Login successful",
     "loginError": "Invalid email or password",
     "registerSuccess": "Registration successful! Check your email.",
-    "registerError": "Registration error"
+    "registerError": "Registration error",
+    "forgotPasswordTitle": "Forgot password",
+    "forgotPasswordDescription": "Enter your email to receive a reset link",
+    "sendResetLink": "Send reset link",
+    "checkYourEmail": "Check your email",
+    "resetEmailSent": "If an account exists with {email}, you will receive a reset link.",
+    "didNotReceiveEmail": "Didn't receive the email?",
+    "tryAgain": "Try again",
+    "backToLogin": "Back to login",
+    "resetPasswordTitle": "New password",
+    "resetPasswordDescription": "Choose a new secure password",
+    "newPassword": "New password",
+    "confirmNewPassword": "Confirm new password",
+    "invalidResetLink": "Invalid or expired link",
+    "invalidResetLinkDescription": "This reset link is no longer valid. Please request a new one.",
+    "requestNewLink": "Request new link",
+    "passwordResetSuccess": "Password changed",
+    "passwordResetSuccessDescription": "Your password has been reset successfully. You can now log in.",
+    "verifyingEmail": "Verifying email",
+    "pleaseWait": "Please wait...",
+    "emailVerified": "Email verified!",
+    "emailVerifiedDescription": "Your email has been verified successfully. You can now log in.",
+    "continueToLogin": "Continue to login",
+    "verificationFailed": "Verification failed",
+    "invalidVerificationLink": "Invalid or expired verification link"
   },
   "Dashboard": {
     "title": "Dashboard",
@@ -133,7 +162,7 @@
     "en": "English"
   },
   "Metadata": {
-    "title": "Church Team Management",
+    "title": "Mon Service",
     "description": "Manage your service teams, schedules, and availability"
   }
 }

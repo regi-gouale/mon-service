@@ -129,10 +129,20 @@ class Settings(BaseSettings):
     )  # 5 minutes
 
     # ========================================================================
-    # OAuth Settings
+    # OAuth Settings (Google)
     # ========================================================================
     google_client_id: str | None = Field(default=None, alias="GOOGLE_CLIENT_ID")
     google_client_secret: str | None = Field(default=None, alias="GOOGLE_CLIENT_SECRET")
+    google_redirect_uri: str = Field(
+        default="http://localhost:3000/api/auth/callback/google",
+        alias="GOOGLE_REDIRECT_URI",
+    )
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def google_oauth_configured(self) -> bool:
+        """Check if Google OAuth is properly configured."""
+        return bool(self.google_client_id and self.google_client_secret)
 
     # ========================================================================
     # Rate Limiting Settings

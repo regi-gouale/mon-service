@@ -89,6 +89,26 @@ class BusinessRuleError(AppException):
         super().__init__(message=message, details=details)
 
 
+class ConflictError(AppException):
+    """Exception raised when there is a conflict (e.g., resource already exists)."""
+
+    def __init__(
+        self,
+        message: str = "Resource conflict",
+    ) -> None:
+        super().__init__(message=message)
+
+
+class PermissionDeniedError(AppException):
+    """Exception raised when user lacks permission for an action."""
+
+    def __init__(
+        self,
+        message: str = "Permission denied",
+    ) -> None:
+        super().__init__(message=message)
+
+
 # HTTP Exception factories for FastAPI
 
 

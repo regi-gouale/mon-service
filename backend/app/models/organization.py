@@ -16,6 +16,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
 
 if TYPE_CHECKING:
+    from app.models.department import Department
+    from app.models.planning import Planning
+    from app.models.planning_assignment import PlanningAssignment
+    from app.models.service import Service
     from app.models.user import User
 
 
@@ -113,13 +117,33 @@ class Organization(Base):
         cascade="all, delete-orphan",
     )
 
-    # Note: departments relationship will be added when Department model is created
-    # departments: Mapped[list["Department"]] = relationship(
-    #     "Department",
-    #     back_populates="organization",
-    #     lazy="selectin",
-    #     cascade="all, delete-orphan",
-    # )
+    departments: Mapped[list["Department"]] = relationship(
+        "Department",
+        back_populates="organization",
+        lazy="selectin",
+        cascade="all, delete-orphan",
+    )
+
+    services: Mapped[list["Service"]] = relationship(
+        "Service",
+        back_populates="organization",
+        lazy="selectin",
+        cascade="all, delete-orphan",
+    )
+
+    plannings: Mapped[list["Planning"]] = relationship(
+        "Planning",
+        back_populates="organization",
+        lazy="selectin",
+        cascade="all, delete-orphan",
+    )
+
+    planning_assignments: Mapped[list["PlanningAssignment"]] = relationship(
+        "PlanningAssignment",
+        back_populates="organization",
+        lazy="selectin",
+        cascade="all, delete-orphan",
+    )
 
     # Table indexes
     __table_args__ = (

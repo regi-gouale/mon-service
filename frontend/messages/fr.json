@@ -18,18 +18,23 @@
     "no": "Non",
     "required": "Requis",
     "optional": "Optionnel",
-    "actions": "Actions"
+    "actions": "Actions",
+    "app": "Gestion d'équipes"
   },
   "Navigation": {
     "home": "Accueil",
     "dashboard": "Tableau de bord",
     "team": "Équipe",
+    "teams": "Équipes",
     "planning": "Planning",
     "availability": "Disponibilités",
     "notifications": "Notifications",
     "settings": "Paramètres",
     "profile": "Profil",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "navigation": "Navigation",
+    "more": "Plus",
+    "tasks": "Tâches"
   },
   "Auth": {
     "login": "Connexion",
@@ -57,7 +62,31 @@
     "loginSuccess": "Connexion réussie",
     "loginError": "Email ou mot de passe incorrect",
     "registerSuccess": "Inscription réussie ! Vérifiez votre email.",
-    "registerError": "Erreur lors de l'inscription"
+    "registerError": "Erreur lors de l'inscription",
+    "forgotPasswordTitle": "Mot de passe oublié",
+    "forgotPasswordDescription": "Entrez votre email pour recevoir un lien de réinitialisation",
+    "sendResetLink": "Envoyer le lien",
+    "checkYourEmail": "Vérifiez votre boîte mail",
+    "resetEmailSent": "Si un compte existe avec l'email {email}, vous recevrez un lien de réinitialisation.",
+    "didNotReceiveEmail": "Vous n'avez pas reçu l'email ?",
+    "tryAgain": "Réessayer",
+    "backToLogin": "Retour à la connexion",
+    "resetPasswordTitle": "Nouveau mot de passe",
+    "resetPasswordDescription": "Choisissez un nouveau mot de passe sécurisé",
+    "newPassword": "Nouveau mot de passe",
+    "confirmNewPassword": "Confirmer le nouveau mot de passe",
+    "invalidResetLink": "Lien invalide ou expiré",
+    "invalidResetLinkDescription": "Ce lien de réinitialisation n'est plus valide. Veuillez en demander un nouveau.",
+    "requestNewLink": "Demander un nouveau lien",
+    "passwordResetSuccess": "Mot de passe modifié",
+    "passwordResetSuccessDescription": "Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter.",
+    "verifyingEmail": "Vérification en cours",
+    "pleaseWait": "Veuillez patienter...",
+    "emailVerified": "Email vérifié !",
+    "emailVerifiedDescription": "Votre adresse email a été vérifiée avec succès. Vous pouvez maintenant vous connecter.",
+    "continueToLogin": "Continuer vers la connexion",
+    "verificationFailed": "Échec de la vérification",
+    "invalidVerificationLink": "Lien de vérification invalide ou expiré"
   },
   "Dashboard": {
     "title": "Tableau de bord",
@@ -133,7 +162,7 @@
     "en": "English"
   },
   "Metadata": {
-    "title": "Church Team Management",
+    "title": "Mon Service",
     "description": "Gérez vos équipes de service, plannings et disponibilités"
   }
 }

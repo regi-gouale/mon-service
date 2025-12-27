@@ -12,6 +12,14 @@ from app.schemas.auth import (
     UserResponse,
     VerifyEmailRequest,
 )
+from app.schemas.availability import (
+    AvailabilityCreate,
+    AvailabilityDeadlineResponse,
+    AvailabilityResponse,
+    DepartmentAvailabilityResponse,
+    MemberAvailabilityResponse,
+    SetAvailabilitiesRequest,
+)
 
 __all__ = [
     # Auth schemas
@@ -25,4 +33,11 @@ __all__ = [
     "TokenPayload",
     "UserResponse",
     "VerifyEmailRequest",
+    # Availability schemas
+    "AvailabilityCreate",
+    "AvailabilityDeadlineResponse",
+    "AvailabilityResponse",
+    "DepartmentAvailabilityResponse",
+    "MemberAvailabilityResponse",
+    "SetAvailabilitiesRequest",
 ]

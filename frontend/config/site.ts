@@ -4,7 +4,7 @@
  */
 
 export const siteConfig = {
-  name: "Church Team Management",
+  name: "Mon Service",
   description: "Gérez vos équipes de département, plannings et services pour votre église",
   url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
   ogImage: "/og-image.png",

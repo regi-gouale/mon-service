@@ -64,6 +64,53 @@ export interface Availability {
   updatedAt: string;
 }
 
+// Availability API types
+export interface UnavailableDate {
+  date: string;
+  reason?: string;
+  isAllDay: boolean;
+  startTime?: string;
+  endTime?: string;
+}
+
+export interface SetAvailabilitiesRequest {
+  year: number;
+  month: number;
+  unavailableDates: UnavailableDate[];
+}
+
+export interface MemberAvailabilityResponse {
+  memberId: string;
+  memberName: string;
+  year: number;
+  month: number;
+  unavailableDates: UnavailableDate[];
+}
+
+export interface MemberAvailabilitySummary {
+  memberId: string;
+  memberName: string;
+  unavailableDates: string[];
+  totalUnavailableDays: number;
+}
+
+export interface DepartmentAvailabilityResponse {
+  departmentId: string;
+  departmentName: string;
+  year: number;
+  month: number;
+  members: MemberAvailabilitySummary[];
+}
+
+export interface AvailabilityDeadlineResponse {
+  departmentId: string;
+  year: number;
+  month: number;
+  deadlineDate: string;
+  isPassed: boolean;
+  daysUntilDeadline: number;
+}
+
 // Service types
 export interface Service {
   id: string;

@@ -18,8 +18,11 @@ from app.core.database import Base
 from app.core.security import get_password_hash, verify_password
 
 if TYPE_CHECKING:
+    from app.models.member import Member
     from app.models.organization import Organization
+    from app.models.planning import Planning
     from app.models.refresh_token import RefreshToken
+    from app.models.service import Service
 
 
 class UserRole(str, enum.Enum):
@@ -200,13 +203,24 @@ class User(Base):
         cascade="all, delete-orphan",
     )
 
-    # Note: members relationship will be added when Member model is created (T2.1.2)
-    # members: Mapped[list["Member"]] = relationship(
-    #     "Member",
-    #     back_populates="user",
-    #     lazy="selectin",
-    #     cascade="all, delete-orphan",
-    # )
+    members: Mapped[list["Member"]] = relationship(
+        "Member",
+        back_populates="user",
+        lazy="selectin",
+        cascade="all, delete-orphan",
+    )
+
+    created_services: Mapped[list["Service"]] = relationship(
+        "Service",
+        back_populates="creator",
+        lazy="selectin",
+    )
+
+    created_plannings: Mapped[list["Planning"]] = relationship(
+        "Planning",
+        back_populates="creator",
+        lazy="selectin",
+    )
 
     # Note: notifications relationship will be added when Notification model is created (T5.1.1)
     # notifications: Mapped[list["Notification"]] = relationship(

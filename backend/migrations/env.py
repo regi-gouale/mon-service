@@ -9,14 +9,12 @@ ensuring consistency with the main application.
 """
 
 import asyncio
-import os
 from logging.config import fileConfig
 
+from alembic import context
 from dotenv import load_dotenv
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
-
-from alembic import context
 
 # Load environment variables from .env file
 # This ensures DATABASE_URL and other required vars are available
@@ -28,12 +26,15 @@ from app.core.config import settings
 
 # Import Base to access metadata for autogenerate support
 from app.core.database import Base
+from app.models.availability import Availability  # noqa: F401
+from app.models.department import Department  # noqa: F401
+from app.models.member import Member  # noqa: F401
 
 # Import all models here so they are registered with Base.metadata
 # This ensures Alembic can detect all tables for autogenerate
 from app.models.organization import Organization  # noqa: F401
-from app.models.user import User  # noqa: F401
 from app.models.refresh_token import RefreshToken  # noqa: F401
+from app.models.user import User  # noqa: F401
 
 # Alembic Config object
 config = context.config
@@ -73,7 +74,7 @@ def run_migrations_offline() -> None:
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
         compare_type=True,
-        compare_server_default=True,
+        compare_server_default=False,  # Disabled due to JSON comparison issues with asyncpg
     )
 
     with context.begin_transaction():
@@ -93,7 +94,7 @@ def do_run_migrations(connection) -> None:
         connection=connection,
         target_metadata=target_metadata,
         compare_type=True,
-        compare_server_default=True,
+        compare_server_default=False,  # Disabled due to JSON comparison issues with asyncpg
     )
 
     with context.begin_transaction():

@@ -134,63 +134,63 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
 
 ### T1.2 - Backend OAuth Google ⏱️ 4h 🟡
 
-- [ ] **T1.2.1** Configurer variables OAuth (GOOGLE_CLIENT_ID, etc.)
-- [ ] **T1.2.2** Créer endpoint POST `/auth/google` pour valider id_token
-- [ ] **T1.2.3** Créer ou lier compte utilisateur depuis profil Google
-- [ ] **T1.2.4** Générer JWT après validation OAuth
+- [x] **T1.2.1** Configurer variables OAuth (GOOGLE_CLIENT_ID, etc.)
+- [x] **T1.2.2** Créer endpoint POST `/auth/google` pour valider id_token
+- [x] **T1.2.3** Créer ou lier compte utilisateur depuis profil Google
+- [x] **T1.2.4** Générer JWT après validation OAuth
 
 📦 Connexion Google fonctionnelle
 
 ### T1.3 - Backend Email Service ⏱️ 4h 🔴
 
-- [ ] **T1.3.1** Configurer FastAPI-Mail avec SMTP settings
-- [ ] **T1.3.2** Créer templates Jinja2:
+- [x] **T1.3.1** Configurer FastAPI-Mail avec SMTP settings
+- [x] **T1.3.2** Créer templates Jinja2:
   - `email_verification.html`
   - `password_reset.html`
-- [ ] **T1.3.3** Créer `app/services/email_service.py`:
+- [x] **T1.3.3** Créer `app/services/email_service.py`:
   - `send_verification_email()`
   - `send_password_reset_email()`
-- [ ] **T1.3.4** Intégrer Celery pour envoi async des emails
+- [x] **T1.3.4** Intégrer Celery pour envoi async des emails
 
 📦 Emails transactionnels envoyés
 
 ### T1.4 - Frontend Auth UI ⏱️ 10h 🔴
 
-- [ ] **T1.4.1** Configurer Better Auth avec providers (credentials, google)
-- [ ] **T1.4.2** Créer page `app/(auth)/login/page.tsx`:
+- [x] **T1.4.1** Configurer Better Auth avec providers (credentials, google)
+- [x] **T1.4.2** Créer page `app/(auth)/login/page.tsx`:
   - Formulaire email/password avec React Hook Form + Zod
   - Bouton "Se connecter avec Google"
   - Lien "Mot de passe oublié"
-- [ ] **T1.4.3** Créer page `app/(auth)/register/page.tsx`:
+- [x] **T1.4.3** Créer page `app/(auth)/register/page.tsx`:
   - Formulaire inscription
   - Validation temps réel (email unique, force password)
-- [ ] **T1.4.4** Créer page `app/(auth)/forgot-password/page.tsx`
-- [ ] **T1.4.5** Créer page `app/(auth)/reset-password/page.tsx`
-- [ ] **T1.4.6** Créer `stores/auth.ts` avec Zustand:
+- [x] **T1.4.4** Créer page `app/(auth)/forgot-password/page.tsx`
+- [x] **T1.4.5** Créer page `app/(auth)/reset-password/page.tsx`
+- [x] **T1.4.6** Créer `stores/auth.ts` avec Zustand:
   - State: user, accessToken, isAuthenticated
   - Actions: login, logout, refreshToken
-- [ ] **T1.4.7** Créer hook `useAuth()` et provider
-- [ ] **T1.4.8** Implémenter refresh token automatique
+- [x] **T1.4.7** Créer hook `useAuth()` et provider
+- [x] **T1.4.8** Implémenter refresh token automatique
 
 📦 Flow auth complet côté client
 
 ### T1.5 - Backend User Profile ⏱️ 4h 🟡
 
-- [ ] **T1.5.1** Créer `app/api/v1/routes/users.py`:
+- [x] **T1.5.1** Créer `app/api/v1/routes/users.py`:
   - GET `/users/me`
   - PATCH `/users/me`
   - DELETE `/users/me` (soft delete, RGPD)
-- [ ] **T1.5.2** Créer endpoint GET `/users/me/data-export` (RGPD)
-- [ ] **T1.5.3** Implémenter upload avatar vers S3
+- [x] **T1.5.2** Créer endpoint GET `/users/me/data-export` (RGPD)
+- [x] **T1.5.3** Implémenter upload avatar vers S3
 
 📦 Gestion profil utilisateur
 
 ### T1.6 - Tests Auth ⏱️ 6h 🔴
 
-- [ ] **T1.6.1** Tests unitaires `auth_service.py` (pytest)
-- [ ] **T1.6.2** Tests intégration endpoints auth
+- [x] **T1.6.1** Tests unitaires `auth_service.py` (pytest)
+- [x] **T1.6.2** Tests intégration endpoints auth
 - [ ] **T1.6.3** Tests e2e flow inscription/connexion (Playwright)
-- [ ] **T1.6.4** Tests sécurité: brute force, token expiration
+- [x] **T1.6.4** Tests sécurité: brute force, token expiration
 
 📦 Coverage ≥ 80% sur module auth
 
@@ -202,41 +202,41 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
 
 ### T2.1 - Backend Availability Model ⏱️ 4h 🔴
 
-- [ ] **T2.1.1** Créer modèle `Department` SQLAlchemy
-- [ ] **T2.1.2** Créer modèle `Member` (relation User-Department)
-- [ ] **T2.1.3** Créer modèle `Availability` avec contraintes
-- [ ] **T2.1.4** Générer migration Alembic
-- [ ] **T2.1.5** Créer index sur (member_id, date)
+- [x] **T2.1.1** Créer modèle `Department` SQLAlchemy
+- [x] **T2.1.2** Créer modèle `Member` (relation User-Department)
+- [x] **T2.1.3** Créer modèle `Availability` avec contraintes
+- [x] **T2.1.4** Générer migration Alembic
+- [x] **T2.1.5** Créer index sur (member_id, date)
 
 📦 Tables Department, Member, Availability créées
 
 ### T2.2 - Backend Availability API ⏱️ 6h 🔴
 
-- [ ] **T2.2.1** Créer `app/repositories/availability_repository.py`
-- [ ] **T2.2.2** Créer `app/services/availability_service.py`:
+- [x] **T2.2.1** Créer `app/repositories/availability_repository.py`
+- [x] **T2.2.2** Créer `app/services/availability_service.py`:
   - `set_availabilities(member_id, month, dates)`
   - `get_member_availabilities(member_id, month)`
   - `get_department_availabilities(dept_id, month)`
   - `check_deadline(dept_id, month)`
-- [ ] **T2.2.3** Créer `app/api/v1/routes/availabilities.py`:
+- [x] **T2.2.3** Créer `app/api/v1/routes/availabilities.py`:
   - GET `/departments/{id}/availabilities?month=`
   - PUT `/departments/{id}/members/me/availabilities`
-- [ ] **T2.2.4** Implémenter validation deadline (403 si dépassée)
+- [x] **T2.2.4** Implémenter validation deadline (403 si dépassée)
 
 📦 API indisponibilités fonctionnelle
 
 ### T2.3 - Frontend Availability UI ⏱️ 8h 🔴
 
-- [ ] **T2.3.1** Créer composant `AvailabilityCalendar`:
+- [x] **T2.3.1** Créer composant `AvailabilityCalendar`:
   - Vue mois avec sélection multiple
   - Jours sélectionnés en surbrillance
   - Indication jours passés (non-sélectionnables)
-- [ ] **T2.3.2** Créer page `app/(dashboard)/availability/page.tsx`:
+- [x] **T2.3.2** Créer page `app/(dashboard)/availability/page.tsx`:
   - Navigation mois précédent/suivant
   - Bouton "Enregistrer"
   - Message deadline si dépassée
-- [ ] **T2.3.3** Intégrer TanStack Query pour sync données
-- [ ] **T2.3.4** Ajouter optimistic updates sur sélection
+- [x] **T2.3.3** Intégrer TanStack Query pour sync données
+- [x] **T2.3.4** Ajouter optimistic updates sur sélection
 
 📦 Interface saisie indisponibilités
 
@@ -251,8 +251,8 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
 
 ### T2.5 - Tests Availability ⏱️ 4h 🔴
 
-- [ ] **T2.5.1** Tests unitaires service availability
-- [ ] **T2.5.2** Tests intégration API
+- [x] **T2.5.1** Tests unitaires service availability
+- [x] **T2.5.2** Tests intégration API
 - [ ] **T2.5.3** Tests composant calendrier (Vitest + Testing Library)
 
 📦 Coverage ≥ 80% sur module availability
@@ -265,40 +265,40 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
 
 ### T3.1 - Backend Planning Models ⏱️ 4h 🔴
 
-- [ ] **T3.1.1** Créer modèle `Service` (événement/culte)
-- [ ] **T3.1.2** Créer modèle `Planning` (mois, status, etc.)
-- [ ] **T3.1.3** Créer modèle `PlanningAssignment`
-- [ ] **T3.1.4** Générer migration Alembic
-- [ ] **T3.1.5** Créer enum `PlanningStatus`
+- [x] **T3.1.1** Créer modèle `Service` (événement/culte)
+- [x] **T3.1.2** Créer modèle `Planning` (mois, status, etc.)
+- [x] **T3.1.3** Créer modèle `PlanningAssignment`
+- [x] **T3.1.4** Générer migration Alembic
+- [x] **T3.1.5** Créer enum `PlanningStatus`
 
 📦 Tables Planning, Service, PlanningAssignment
 
 ### T3.2 - Backend Planning Generator ⏱️ 12h 🔴
 
-- [ ] **T3.2.1** Créer `app/services/planning_generator.py`:
+- [x] **T3.2.1** Créer `app/services/planning_generator.py`:
   - Algorithme greedy avec scoring pondéré
   - Calcul score équité (historique participations)
   - Calcul score compétences (match requis)
   - Détection conflits (aucun disponible)
 - [ ] **T3.2.2** Créer tâche Celery `generate_planning_task`
 - [ ] **T3.2.3** Implémenter progress tracking (Redis)
-- [ ] **T3.2.4** Calculer confidence_score du planning
-- [ ] **T3.2.5** Gérer les cas edge (aucun membre dispo)
+- [x] **T3.2.4** Calculer confidence_score du planning
+- [x] **T3.2.5** Gérer les cas edge (aucun membre dispo)
 
 📦 Algorithme de génération fonctionnel
 
 ### T3.3 - Backend Planning API ⏱️ 8h 🔴
 
-- [ ] **T3.3.1** Créer `app/repositories/planning_repository.py`
-- [ ] **T3.3.2** Créer `app/services/planning_service.py`
-- [ ] **T3.3.3** Créer `app/api/v1/routes/plannings.py`:
+- [x] **T3.3.1** Créer `app/repositories/planning_repository.py`
+- [x] **T3.3.2** Créer `app/services/planning_service.py`
+- [x] **T3.3.3** Créer `app/api/v1/routes/plannings.py`:
   - GET `/departments/{id}/plannings`
   - POST `/departments/{id}/plannings` (create draft)
   - GET `/departments/{id}/plannings/{id}`
   - POST `/departments/{id}/plannings/{id}/generate`
   - POST `/departments/{id}/plannings/{id}/publish`
   - POST `/departments/{id}/plannings/{id}/assignments`
-- [ ] **T3.3.4** Créer endpoints Services CRUD
+- [x] **T3.3.4** Créer endpoints Services CRUD
 
 📦 API planning complète
 

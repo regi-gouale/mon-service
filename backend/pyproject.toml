@@ -14,7 +14,10 @@ dependencies = [
     "celery>=5.6.0",
     "email-validator>=2.3.0",
     "fastapi>=0.127.1",
+    "fastapi-mail>=1.6.1",
+    "google-auth>=2.38.0",
     "httpx>=0.28.1",
+    "jinja2>=3.1.6",
     "passlib[bcrypt]>=1.7.4",
     "pydantic>=2.12.5",
     "pydantic-settings>=2.12.0",
@@ -22,6 +25,7 @@ dependencies = [
     "python-multipart>=0.0.21",
     "python-socketio>=5.16.0",
     "redis>=7.1.0",
+    "requests>=2.32.0",
     "sqlalchemy[asyncio]>=2.0.45",
     "uvicorn[standard]>=0.40.0",
 ]
@@ -71,8 +75,16 @@ disallow_untyped_defs = true
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
-module = ["celery.*", "passlib.*", "jose.*", "jwt.*", "pydantic_settings.*", "bcrypt.*"]
+module = ["celery.*", "passlib.*", "jose.*", "jwt.*", "pydantic_settings.*", "bcrypt.*", "google.auth.*", "google.oauth2.*", "fastapi_mail.*", "jinja2.*"]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["app.workers.tasks.*"]
+disallow_untyped_decorators = false
+
+[[tool.mypy.overrides]]
+module = ["app.services.auth_service"]
+disallow_untyped_calls = false
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

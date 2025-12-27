@@ -8,8 +8,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Church Team Management",
-  description: "Manage your church department teams, schedules, and services",
+  title: "Mon Service",
+  description: "Gérez vos équipes de service, plannings et disponibilités",
 };
 
 export default function RootLayout({
