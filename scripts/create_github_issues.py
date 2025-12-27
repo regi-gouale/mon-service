@@ -39,6 +39,7 @@ PRIORITY_LABELS = {
 # Epic mapping
 EPIC_LABEL_MAP = {
     "Infrastructure & Fondations": "epic:infrastructure",
+    "Infrastructure": "epic:infrastructure",
     "Inscription et Authentification": "epic:authentication",
     "Saisie des Indisponibilités": "epic:availability",
     "Génération et Publication du Planning": "epic:planning",
@@ -94,6 +95,9 @@ class IssueParser:
                 if match:
                     key, value = match.groups()
                     metadata[key.lower()] = value.strip()
+            elif line.strip() == "":
+                # Skip empty lines in metadata section
+                continue
             else:
                 body_start = i
                 break
@@ -244,6 +248,10 @@ def main():
         "--dry-run", action="store_true", help="Preview without creating"
     )
     parser.add_argument("--limit", type=int, help="Limit number of issues to create")
+    parser.add_argument(
+        "--epic",
+        help="Filter issues by epic name (e.g., 'Inscription et Authentification')",
+    )
 
     args = parser.parse_args()
 
@@ -264,6 +272,8 @@ def main():
     print(f"{'='*60}")
     print(f"Repository: {args.owner}/{args.repo}")
     print(f"File: {args.file}")
+    if args.epic:
+        print(f"Epic filter: {args.epic}")
     if args.dry_run:
         print("Mode: DRY-RUN (preview only)")
     print(f"{'='*60}\n")
@@ -273,8 +283,13 @@ def main():
     issue_parser = IssueParser(args.file)
     print(f"✓ Found {len(issue_parser.issues)} issues\n")
 
-    # Limit if specified
+    # Filter by epic if specified
     issues = issue_parser.issues
+    if args.epic:
+        issues = [i for i in issues if args.epic.lower() in i.get("epic", "").lower()]
+        print(f"Filtered to {len(issues)} issues for epic '{args.epic}'\n")
+
+    # Limit if specified
     if args.limit:
         issues = issues[: args.limit]
         print(f"Limited to {args.limit} issues\n")
