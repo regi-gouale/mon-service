@@ -21,14 +21,16 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 # Load the real .env file for integration tests (not .env.test)
+# Note: In CI, environment variables are set directly by the workflow
 _env_path = Path(__file__).parent.parent.parent / ".env"
 if _env_path.exists():
-    load_dotenv(_env_path, override=True)
+    load_dotenv(_env_path, override=False)  # Don't override CI env vars
 
 # Get the real DATABASE_URL from environment
+# Priority: CI env var > .env file > default local dev
 REAL_DATABASE_URL = os.environ.get(
     "DATABASE_URL",
-    "postgresql+asyncpg://church_team:church_team_dev@localhost:5432/church_team_db",
+    "postgresql+asyncpg://postgres:postgres@localhost:5432/test_db",
 )
 
 
