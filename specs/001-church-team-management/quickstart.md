@@ -111,8 +111,8 @@ docker compose logs -f
 ### Option B: Services infra uniquement (pour développement actif)
 
 ```bash
-# Démarrer uniquement PostgreSQL, Redis, et MailHog
-docker compose up -d postgres redis mailhog
+# Démarrer uniquement PostgreSQL, Redis, et Mailpit
+docker compose up -d postgres redis mailpit
 ```
 
 ### Docker Compose (`docker-compose.yml`)
@@ -151,14 +151,24 @@ services:
       timeout: 5s
       retries: 5
 
-  mailhog:
-    image: mailhog/mailhog:v1.0.1
-    container_name: monservice-mailhog
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: monservice-mailpit
     ports:
       - "1025:1025" # SMTP
       - "8025:8025" # Web UI
-    logging:
-      driver: none
+    environment:
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: "true"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "true"
+    volumes:
+      - mailpit_data:/data
+    healthcheck:
+      test:
+        ["CMD", "wget", "--spider", "-q", "http://localhost:8025/api/v1/info"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Optionnel: MinIO pour simuler S3 en local
   minio:
@@ -289,7 +299,7 @@ pnpm dev
 | Backend API   | http://localhost:8000       | API FastAPI                  |
 | API Docs      | http://localhost:8000/docs  | Swagger UI                   |
 | ReDoc         | http://localhost:8000/redoc | Documentation ReDoc          |
-| MailHog       | http://localhost:8025       | Inbox emails de test         |
+| Mailpit       | http://localhost:8025       | Inbox emails de test         |
 | MinIO Console | http://localhost:9001       | Gestion S3 local             |
 | pgAdmin       | http://localhost:5050       | Admin PostgreSQL (optionnel) |
 

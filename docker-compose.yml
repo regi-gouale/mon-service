@@ -1,0 +1,159 @@
+# Church Team Management SaaS - Docker Compose Configuration
+# Services: PostgreSQL, Redis, Mailpit, MinIO
+
+# =============================================================================
+# Configuration globale de logging
+# =============================================================================
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+    tag: "{{.Name}}"
+
+services:
+  # =============================================================================
+  # PostgreSQL - Base de données principale
+  # =============================================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: church-team-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-church_team}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-church_team_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-church_team_db}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-church_team} -d ${POSTGRES_DB:-church_team_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    logging: *default-logging
+    networks:
+      - church-team-network
+
+  # =============================================================================
+  # Redis - Cache, sessions, broker Celery
+  # =============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: church-team-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy volatile-lru  # avoid evicting non-TTL Celery/session keys
+    volumes:
+      - redis_data:/data
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    logging: *default-logging
+    networks:
+      - church-team-network
+
+  # =============================================================================
+  # Mailpit - Serveur SMTP de développement pour emails
+  # =============================================================================
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: church-team-mailpit
+    restart: unless-stopped
+    ports:
+      - "${MAILPIT_SMTP_PORT:-1025}:1025"  # SMTP
+      - "${MAILPIT_UI_PORT:-8025}:8025"    # Web UI
+    environment:
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: "true"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "true"
+    volumes:
+      - mailpit_data:/data
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8025/api/v1/info"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    logging: *default-logging
+    networks:
+      - church-team-network
+
+  # =============================================================================
+  # MinIO - Stockage S3 compatible pour fichiers
+  # =============================================================================
+  minio:
+    image: minio/minio:latest
+    container_name: church-team-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin123}
+    volumes:
+      - minio_data:/data
+    ports:
+      - "${MINIO_API_PORT:-9000}:9000"     # API S3
+      - "${MINIO_CONSOLE_PORT:-9001}:9001" # Console Web
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      start_period: 10s
+    logging: *default-logging
+    networks:
+      - church-team-network
+
+  # =============================================================================
+  # MinIO Setup - Création automatique des buckets
+  # =============================================================================
+  minio-setup:
+    image: minio/mc:latest
+    container_name: church-team-minio-setup
+    depends_on:
+      minio:
+        condition: service_started
+    entrypoint: >
+      /bin/sh -c "
+        sleep 5;
+        mc alias set local http://minio:9000 $${MINIO_ROOT_USER:-minioadmin} $${MINIO_ROOT_PASSWORD:-minioadmin123};
+        mc mb local/$${MINIO_BUCKET_NAME:-church-team-files} --ignore-existing;
+        mc anonymous set download local/$${MINIO_BUCKET_NAME:-church-team-files}/public;
+        echo 'MinIO bucket setup complete';
+        exit 0;
+      "
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin123}
+      MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME:-church-team-files}
+    networks:
+      - church-team-network
+
+# =============================================================================
+# Volumes persistants
+# =============================================================================
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  mailpit_data:
+    driver: local
+  minio_data:
+    driver: local
+
+# =============================================================================
+# Réseau interne
+# =============================================================================
+networks:
+  church-team-network:
+    driver: bridge
+    name: church-team-network

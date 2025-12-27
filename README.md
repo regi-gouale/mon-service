@@ -89,7 +89,7 @@ cd mon-service
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env.local
 
-# 3. Démarrer les services Docker (PostgreSQL, Redis, MailHog)
+# 3. Démarrer les services Docker (PostgreSQL, Redis, Mailpit, MinIO)
 docker compose up -d
 
 # 4. Setup Backend
@@ -112,7 +112,8 @@ pnpm dev
 | Frontend    | http://localhost:3000      | Application Next.js |
 | Backend API | http://localhost:8000      | API FastAPI         |
 | API Docs    | http://localhost:8000/docs | Swagger UI          |
-| MailHog     | http://localhost:8025      | Emails de test      |
+| Mailpit     | http://localhost:8025      | Emails de test      |
+| MinIO       | http://localhost:9001      | Console S3          |
 
 ## 📝 Documentation
 
