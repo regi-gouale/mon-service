@@ -109,26 +109,26 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
 
 ### T1.1 - Backend Auth Core ⏱️ 8h 🔴
 
-- [ ] **T1.1.1** Créer `app/core/security.py`:
+- [x] **T1.1.1** Créer `app/core/security.py`:
   - Hashing bcrypt pour passwords
   - Génération JWT avec python-jose
   - Validation tokens
-- [ ] **T1.1.2** Créer `app/schemas/auth.py`:
+- [x] **T1.1.2** Créer `app/schemas/auth.py`:
   - `RegisterRequest`, `LoginRequest`, `AuthResponse`
   - `TokenPayload`, `RefreshTokenRequest`
-- [ ] **T1.1.3** Créer `app/repositories/user_repository.py`:
+- [x] **T1.1.3** Créer `app/repositories/user_repository.py`:
   - `create()`, `get_by_email()`, `get_by_id()`, `update()`
-- [ ] **T1.1.4** Créer `app/services/auth_service.py`:
+- [x] **T1.1.4** Créer `app/services/auth_service.py`:
   - `register()`, `login()`, `refresh_token()`, `logout()`
   - `forgot_password()`, `reset_password()`
-- [ ] **T1.1.5** Créer `app/api/v1/routes/auth.py`:
+- [x] **T1.1.5** Créer `app/api/v1/routes/auth.py`:
   - POST `/auth/register`
   - POST `/auth/login`
   - POST `/auth/refresh`
   - POST `/auth/logout`
   - POST `/auth/forgot-password`
   - POST `/auth/reset-password`
-- [ ] **T1.1.6** Créer middleware d'authentification `get_current_user`
+- [x] **T1.1.6** Créer middleware d'authentification `get_current_user`
 
 📦 Endpoints auth fonctionnels avec JWT
 

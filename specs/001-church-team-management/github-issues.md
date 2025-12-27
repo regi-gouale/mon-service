@@ -893,7 +893,713 @@ Créer documentation pour le processus de déploiement.
 
 ## Epic 1: Inscription et Authentification (P1)
 
-_(Voir tasks.md pour les 135+ issues complètes)_
+### Issue T1.1.1 - Créer app/core/security.py avec hashing bcrypt et JWT
+
+**Epic**: Inscription et Authentification
+**Priority**: 🔴 Critical
+**Effort**: 2h
+
+**Description**:
+Créer le module de sécurité avec les fonctions de hashing et gestion JWT.
+
+**Fonctionnalités requises**:
+
+- Hashing bcrypt pour passwords
+- Génération JWT avec python-jose
+- Validation tokens
+- Helper functions: `hash_password()`, `verify_password()`, `create_access_token()`, `create_refresh_token()`, `decode_token()`
+
+**Acceptance Criteria**:
+
+- [ ] Module créé dans `app/core/security.py`
+- [ ] Hashing bcrypt fonctionnel
+- [ ] JWT génération/validation fonctionnelle
+- [ ] Tests unitaires passants
+
+---
+
+### Issue T1.1.2 - Créer app/schemas/auth.py avec schémas Pydantic
+
+**Epic**: Inscription et Authentification
+**Priority**: 🔴 Critical
+**Effort**: 1.5h
+
+**Description**:
+Créer les schémas Pydantic pour l'authentification.
+
+**Schémas requis**:
+
+- `RegisterRequest` - email, password, first_name, last_name
+- `LoginRequest` - email, password
+- `AuthResponse` - access_token, refresh_token, token_type, user
+- `TokenPayload` - sub, exp, type
+- `RefreshTokenRequest` - refresh_token
+
+**Acceptance Criteria**:
+
+- [ ] Schémas créés dans `app/schemas/auth.py`
+- [ ] Validation email correcte
+- [ ] Validation password (min 8 chars, etc.)
+- [ ] Export dans `__init__.py`
+
+---
+
+### Issue T1.1.3 - Créer app/repositories/user_repository.py
+
+**Epic**: Inscription et Authentification
+**Priority**: 🔴 Critical
+**Effort**: 2h
+
+**Description**:
+Créer le repository pour gérer les opérations CRUD sur les utilisateurs.
+
+**Méthodes requises**:
+
+- `create(user_data)` - Créer un nouvel utilisateur
+- `get_by_email(email)` - Récupérer par email
+- `get_by_id(user_id)` - Récupérer par ID
+- `update(user_id, data)` - Mettre à jour
+- `delete(user_id)` - Soft delete
+
+**Acceptance Criteria**:
+
+- [ ] Repository créé avec interface async
+- [ ] Toutes les méthodes CRUD implémentées
+- [ ] Gestion des erreurs (not found, duplicate)
+- [ ] Tests unitaires
+
+---
+
+### Issue T1.1.4 - Créer app/services/auth_service.py
+
+**Epic**: Inscription et Authentification
+**Priority**: 🔴 Critical
+**Effort**: 3h
+
+**Description**:
+Créer le service d'authentification avec toute la logique métier.
+
+**Méthodes requises**:
+
+- `register(data)` - Inscription nouvel utilisateur
+- `login(email, password)` - Authentification
+- `refresh_token(refresh_token)` - Renouveler access token
+- `logout(user_id, refresh_token)` - Déconnexion
+- `forgot_password(email)` - Envoyer email reset
+- `reset_password(token, new_password)` - Réinitialiser password
+
+**Acceptance Criteria**:
+
+- [ ] Service créé avec injection de dépendances
+- [ ] Toutes les méthodes implémentées
+- [ ] Gestion des erreurs métier
+- [ ] Logs structurés
+
+---
+
+### Issue T1.1.5 - Créer app/api/v1/routes/auth.py avec endpoints
+
+**Epic**: Inscription et Authentification
+**Priority**: 🔴 Critical
+**Effort**: 2h
+
+**Description**:
+Créer les endpoints REST pour l'authentification.
+
+**Endpoints requis**:
+
+- POST `/auth/register` - Inscription
+- POST `/auth/login` - Connexion
+- POST `/auth/refresh` - Refresh token
+- POST `/auth/logout` - Déconnexion
+- POST `/auth/forgot-password` - Mot de passe oublié
+- POST `/auth/reset-password` - Réinitialiser password
+
+**Acceptance Criteria**:
+
+- [ ] Tous les endpoints créés
+- [ ] Validation des inputs
+- [ ] Responses standardisées
+- [ ] Documentation OpenAPI
+
+---
+
+### Issue T1.1.6 - Créer middleware d'authentification get_current_user
+
+**Epic**: Inscription et Authentification
+**Priority**: 🔴 Critical
+**Effort**: 1.5h
+
+**Description**:
+Créer le middleware/dependency FastAPI pour extraire l'utilisateur courant du JWT.
+
+**Fonctionnalités**:
+
+- Extraire token du header Authorization
+- Valider le token
+- Charger l'utilisateur depuis la DB
+- Injecter dans les routes
+
+**Acceptance Criteria**:
+
+- [ ] Dependency `get_current_user` créée
+- [ ] Dependency `get_current_active_user` créée
+- [ ] Gestion des erreurs 401/403
+- [ ] Testable avec mocks
+
+---
+
+### Issue T1.2.1 - Configurer variables OAuth Google
+
+**Epic**: Inscription et Authentification
+**Priority**: 🟡 Important
+**Effort**: 1h
+
+**Description**:
+Configurer les variables d'environnement pour OAuth Google.
+
+**Variables requises**:
+
+- GOOGLE_CLIENT_ID
+- GOOGLE_CLIENT_SECRET
+- GOOGLE_REDIRECT_URI
+
+**Acceptance Criteria**:
+
+- [ ] Variables ajoutées dans config.py
+- [ ] Variables dans .env.example
+- [ ] Documentation de configuration Google Console
+
+---
+
+### Issue T1.2.2 - Créer endpoint POST /auth/google
+
+**Epic**: Inscription et Authentification
+**Priority**: 🟡 Important
+**Effort**: 2h
+
+**Description**:
+Créer l'endpoint pour valider le id_token Google et authentifier l'utilisateur.
+
+**Flow**:
+
+1. Recevoir id_token du frontend
+2. Valider avec Google API
+3. Extraire profil utilisateur
+4. Créer ou lier compte
+5. Retourner JWT
+
+**Acceptance Criteria**:
+
+- [ ] Endpoint POST `/auth/google` créé
+- [ ] Validation id_token fonctionnelle
+- [ ] Création compte si nouveau
+- [ ] JWT retourné
+
+---
+
+### Issue T1.2.3 - Créer ou lier compte utilisateur depuis profil Google
+
+**Epic**: Inscription et Authentification
+**Priority**: 🟡 Important
+**Effort**: 1.5h
+
+**Description**:
+Implémenter la logique de création/liaison de compte depuis un profil Google OAuth.
+
+**Logique**:
+
+- Si email existe → lier le compte Google
+- Si email n'existe pas → créer nouveau compte
+- Marquer email comme vérifié
+
+**Acceptance Criteria**:
+
+- [ ] Logique dans auth_service
+- [ ] Liaison compte existant
+- [ ] Création nouveau compte
+- [ ] Email marqué vérifié
+
+---
+
+### Issue T1.3.1 - Configurer FastAPI-Mail avec SMTP settings
+
+**Epic**: Inscription et Authentification
+**Priority**: 🔴 Critical
+**Effort**: 1h
+
+**Description**:
+Configurer FastAPI-Mail pour l'envoi d'emails transactionnels.
+
+**Configuration**:
+
+- SMTP_HOST, SMTP_PORT
+- SMTP_USER, SMTP_PASSWORD
+- MAIL_FROM, MAIL_FROM_NAME
+- Support TLS/SSL
+
+**Acceptance Criteria**:
+
+- [ ] FastAPI-Mail configuré
+- [ ] Test d'envoi fonctionne (MailHog)
+- [ ] Configuration dans settings
+
+---
+
+### Issue T1.3.2 - Créer templates Jinja2 pour emails
+
+**Epic**: Inscription et Authentification
+**Priority**: 🔴 Critical
+**Effort**: 2h
+
+**Description**:
+Créer les templates HTML pour les emails transactionnels.
+
+**Templates requis**:
+
+- `email_verification.html` - Email de vérification
+- `password_reset.html` - Email de reset password
+- `welcome.html` - Email de bienvenue
+
+**Acceptance Criteria**:
+
+- [ ] Templates créés dans `app/templates/`
+- [ ] Design responsive
+- [ ] Variables dynamiques fonctionnelles
+- [ ] Preview dans MailHog
+
+---
+
+### Issue T1.3.3 - Créer app/services/email_service.py
+
+**Epic**: Inscription et Authentification
+**Priority**: 🔴 Critical
+**Effort**: 2h
+
+**Description**:
+Créer le service d'envoi d'emails.
+
+**Méthodes requises**:
+
+- `send_verification_email(user, token)`
+- `send_password_reset_email(user, token)`
+- `send_welcome_email(user)`
+
+**Acceptance Criteria**:
+
+- [ ] Service créé
+- [ ] Toutes les méthodes implémentées
+- [ ] Templates rendus correctement
+- [ ] Logs d'envoi
+
+---
+
+### Issue T1.3.4 - Intégrer Celery pour envoi async des emails
+
+**Epic**: Inscription et Authentification
+**Priority**: 🟡 Important
+**Effort**: 2h
+
+**Description**:
+Configurer Celery pour envoyer les emails de manière asynchrone.
+
+**Configuration**:
+
+- Celery worker avec Redis broker
+- Task `send_email` async
+- Retry policy sur échec
+
+**Acceptance Criteria**:
+
+- [ ] Celery worker fonctionnel
+- [ ] Emails envoyés en background
+- [ ] Retry sur échec
+- [ ] Monitoring des tasks
+
+---
+
+### Issue T1.4.1 - Configurer Better Auth avec providers
+
+**Epic**: Inscription et Authentification
+**Priority**: 🔴 Critical
+**Effort**: 2h
+
+**Description**:
+Configurer Better Auth côté frontend avec les providers d'authentification.
+
+**Providers**:
+
+- Credentials (email/password)
+- Google OAuth
+
+**Acceptance Criteria**:
+
+- [ ] Better Auth installé et configuré
+- [ ] Provider credentials fonctionnel
+- [ ] Provider Google fonctionnel
+- [ ] Session management
+
+---
+
+### Issue T1.4.2 - Créer page app/(auth)/login/page.tsx
+
+**Epic**: Inscription et Authentification
+**Priority**: 🔴 Critical
+**Effort**: 3h
+
+**Description**:
+Créer la page de connexion avec formulaire et OAuth.
+
+**Éléments UI**:
+
+- Formulaire email/password avec React Hook Form + Zod
+- Bouton "Se connecter avec Google"
+- Lien "Mot de passe oublié"
+- Lien vers inscription
+- Messages d'erreur
+
+**Acceptance Criteria**:
+
+- [ ] Page créée et stylée
+- [ ] Formulaire fonctionnel
+- [ ] Validation côté client
+- [ ] Redirection après login
+
+---
+
+### Issue T1.4.3 - Créer page app/(auth)/register/page.tsx
+
+**Epic**: Inscription et Authentification
+**Priority**: 🔴 Critical
+**Effort**: 3h
+
+**Description**:
+Créer la page d'inscription avec validation en temps réel.
+
+**Éléments UI**:
+
+- Formulaire: email, password, first_name, last_name
+- Validation temps réel (email unique, force password)
+- Indicateur de force du mot de passe
+- Bouton "S'inscrire avec Google"
+
+**Acceptance Criteria**:
+
+- [ ] Page créée et stylée
+- [ ] Formulaire avec validation
+- [ ] Check email unique async
+- [ ] Password strength indicator
+
+---
+
+### Issue T1.4.4 - Créer page app/(auth)/forgot-password/page.tsx
+
+**Epic**: Inscription et Authentification
+**Priority**: 🔴 Critical
+**Effort**: 1.5h
+
+**Description**:
+Créer la page de demande de réinitialisation de mot de passe.
+
+**Éléments UI**:
+
+- Formulaire avec champ email
+- Message de confirmation après envoi
+- Lien retour vers login
+
+**Acceptance Criteria**:
+
+- [ ] Page créée
+- [ ] Envoi email fonctionnel
+- [ ] Message de confirmation
+- [ ] Gestion erreurs
+
+---
+
+### Issue T1.4.5 - Créer page app/(auth)/reset-password/page.tsx
+
+**Epic**: Inscription et Authentification
+**Priority**: 🔴 Critical
+**Effort**: 2h
+
+**Description**:
+Créer la page de réinitialisation du mot de passe avec token.
+
+**Éléments UI**:
+
+- Formulaire: new password, confirm password
+- Validation token depuis URL
+- Message de succès/erreur
+- Redirection vers login
+
+**Acceptance Criteria**:
+
+- [ ] Page créée
+- [ ] Validation token
+- [ ] Password reset fonctionnel
+- [ ] Redirection après succès
+
+---
+
+### Issue T1.4.6 - Créer stores/auth.ts avec Zustand
+
+**Epic**: Inscription et Authentification
+**Priority**: 🔴 Critical
+**Effort**: 2h
+
+**Description**:
+Créer le store Zustand pour gérer l'état d'authentification.
+
+**State**:
+
+- user: User | null
+- accessToken: string | null
+- isAuthenticated: boolean
+- isLoading: boolean
+
+**Actions**:
+
+- login(credentials)
+- logout()
+- refreshToken()
+- setUser(user)
+
+**Acceptance Criteria**:
+
+- [ ] Store créé
+- [ ] Persistence localStorage
+- [ ] Actions fonctionnelles
+- [ ] Types TypeScript
+
+---
+
+### Issue T1.4.7 - Créer hook useAuth() et provider
+
+**Epic**: Inscription et Authentification
+**Priority**: 🔴 Critical
+**Effort**: 1.5h
+
+**Description**:
+Créer le hook personnalisé useAuth et son provider.
+
+**Hook useAuth**:
+
+- Accès au state auth
+- Méthodes login/logout/register
+- isAuthenticated, user, isLoading
+
+**Acceptance Criteria**:
+
+- [ ] Hook créé
+- [ ] Provider dans layout
+- [ ] Utilisable dans tous les composants
+- [ ] Typed correctement
+
+---
+
+### Issue T1.4.8 - Implémenter refresh token automatique
+
+**Epic**: Inscription et Authentification
+**Priority**: 🔴 Critical
+**Effort**: 2h
+
+**Description**:
+Implémenter le refresh automatique du token avant expiration.
+
+**Logique**:
+
+- Interceptor sur les requêtes API
+- Vérifier expiration token
+- Refresh si proche expiration
+- Retry la requête originale
+
+**Acceptance Criteria**:
+
+- [ ] Refresh automatique fonctionne
+- [ ] Pas d'interruption UX
+- [ ] Logout si refresh échoue
+- [ ] Gestion race conditions
+
+---
+
+### Issue T1.5.1 - Créer app/api/v1/routes/users.py pour profil
+
+**Epic**: Inscription et Authentification
+**Priority**: 🟡 Important
+**Effort**: 2h
+
+**Description**:
+Créer les endpoints de gestion du profil utilisateur.
+
+**Endpoints**:
+
+- GET `/users/me` - Récupérer profil
+- PATCH `/users/me` - Modifier profil
+- DELETE `/users/me` - Soft delete (RGPD)
+
+**Acceptance Criteria**:
+
+- [ ] Endpoints créés
+- [ ] Authentification requise
+- [ ] Soft delete implémenté
+- [ ] Validation données
+
+---
+
+### Issue T1.5.2 - Créer endpoint GET /users/me/data-export (RGPD)
+
+**Epic**: Inscription et Authentification
+**Priority**: 🟡 Important
+**Effort**: 2h
+
+**Description**:
+Créer l'endpoint d'export des données personnelles (conformité RGPD).
+
+**Données à exporter**:
+
+- Profil utilisateur
+- Indisponibilités
+- Historique d'activité
+- Préférences
+
+**Format**: JSON ou ZIP
+
+**Acceptance Criteria**:
+
+- [ ] Endpoint créé
+- [ ] Export complet des données
+- [ ] Format JSON/ZIP
+- [ ] Logs d'audit
+
+---
+
+### Issue T1.5.3 - Implémenter upload avatar vers S3
+
+**Epic**: Inscription et Authentification
+**Priority**: 🟡 Important
+**Effort**: 2h
+
+**Description**:
+Implémenter l'upload d'avatar utilisateur vers MinIO/S3.
+
+**Fonctionnalités**:
+
+- Endpoint POST `/users/me/avatar`
+- Validation type fichier (image)
+- Redimensionnement (150x150)
+- Upload vers S3/MinIO
+- Retour URL
+
+**Acceptance Criteria**:
+
+- [ ] Upload fonctionne
+- [ ] Validation fichier
+- [ ] Redimensionnement
+- [ ] URL accessible
+
+---
+
+### Issue T1.6.1 - Tests unitaires auth_service.py
+
+**Epic**: Inscription et Authentification
+**Priority**: 🔴 Critical
+**Effort**: 2h
+
+**Description**:
+Écrire les tests unitaires pour le service d'authentification.
+
+**Tests requis**:
+
+- Test register success/failure
+- Test login success/failure
+- Test refresh token
+- Test logout
+- Test password reset flow
+
+**Acceptance Criteria**:
+
+- [ ] Tests écrits avec pytest
+- [ ] Mocks pour repositories
+- [ ] Coverage ≥ 80%
+- [ ] CI passe
+
+---
+
+### Issue T1.6.2 - Tests intégration endpoints auth
+
+**Epic**: Inscription et Authentification
+**Priority**: 🔴 Critical
+**Effort**: 2h
+
+**Description**:
+Écrire les tests d'intégration pour les endpoints auth.
+
+**Tests requis**:
+
+- Test register endpoint
+- Test login endpoint
+- Test refresh endpoint
+- Test protected endpoints
+- Test error cases
+
+**Acceptance Criteria**:
+
+- [ ] Tests avec TestClient
+- [ ] Database de test
+- [ ] Tous les endpoints testés
+- [ ] CI passe
+
+---
+
+### Issue T1.6.3 - Tests e2e flow inscription/connexion (Playwright)
+
+**Epic**: Inscription et Authentification
+**Priority**: 🟡 Important
+**Effort**: 3h
+
+**Description**:
+Écrire les tests end-to-end pour le flow complet d'authentification.
+
+**Scenarios**:
+
+- Inscription complète
+- Connexion avec email/password
+- Connexion avec Google
+- Mot de passe oublié
+- Déconnexion
+
+**Acceptance Criteria**:
+
+- [ ] Tests Playwright écrits
+- [ ] Tous les flows testés
+- [ ] Screenshots sur échec
+- [ ] CI configuration
+
+---
+
+### Issue T1.6.4 - Tests sécurité auth
+
+**Epic**: Inscription et Authentification
+**Priority**: 🟡 Important
+**Effort**: 2h
+
+**Description**:
+Écrire les tests de sécurité pour l'authentification.
+
+**Tests requis**:
+
+- Test brute force protection
+- Test token expiration
+- Test invalid tokens
+- Test CORS
+- Test injection
+
+**Acceptance Criteria**:
+
+- [ ] Tests sécurité écrits
+- [ ] Rate limiting testé
+- [ ] Token validation testée
+- [ ] Documentation sécurité
 
 ---
 

@@ -2,6 +2,11 @@
 
 from fastapi import APIRouter
 
+from app.api.v1.routes.auth import router as auth_router
+
 router = APIRouter()
 
-# Routes will be registered here as they are implemented
+# Register auth routes
+router.include_router(auth_router)
+
+# Additional routes will be registered here as they are implemented
