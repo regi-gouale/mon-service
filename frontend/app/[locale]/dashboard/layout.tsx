@@ -21,17 +21,17 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const t = useTranslations("Common");
   const router = useRouter();
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const { isAuthenticated, isLoading, hasHydrated } = useAuthStore();
 
-  // Protect dashboard routes
+  // Protect dashboard routes - only redirect after hydration is complete
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (hasHydrated && !isLoading && !isAuthenticated) {
       router.push("/login");
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [isAuthenticated, isLoading, hasHydrated, router]);
 
-  // Show loading state while checking authentication
-  if (isLoading) {
+  // Show loading state while checking authentication or hydrating
+  if (!hasHydrated || isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">

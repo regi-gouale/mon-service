@@ -24,12 +24,14 @@ export interface AuthState {
   refreshToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  hasHydrated: boolean;
 
   // Actions
   setUser: (user: User | null) => void;
   setTokens: (accessToken: string, refreshToken: string) => void;
   clearTokens: () => void;
   setLoading: (isLoading: boolean) => void;
+  setHasHydrated: (hasHydrated: boolean) => void;
   login: (user: User, accessToken: string, refreshToken: string) => void;
   logout: () => void;
   updateUser: (userData: Partial<User>) => void;
@@ -38,22 +40,14 @@ export interface AuthState {
 export const useAuthStore = create<AuthState>()(
   devtools(
     persist(
-      (
-        set
-      ): Omit<
-        AuthState,
-        "setUser" | "setTokens" | "clearTokens" | "setLoading" | "login" | "logout" | "updateUser"
-      > &
-        Pick<
-          AuthState,
-          "setUser" | "setTokens" | "clearTokens" | "setLoading" | "login" | "logout" | "updateUser"
-        > => ({
+      (set) => ({
         // Initial state
         user: null,
         accessToken: null,
         refreshToken: null,
         isAuthenticated: false,
         isLoading: false,
+        hasHydrated: false,
 
         // Actions
         setUser: (user) =>
@@ -75,6 +69,8 @@ export const useAuthStore = create<AuthState>()(
           }),
 
         setLoading: (isLoading) => set({ isLoading }),
+
+        setHasHydrated: (hasHydrated) => set({ hasHydrated }),
 
         login: (user, accessToken, refreshToken) =>
           set({
@@ -107,6 +103,9 @@ export const useAuthStore = create<AuthState>()(
           refreshToken: state.refreshToken,
           isAuthenticated: state.isAuthenticated,
         }),
+        onRehydrateStorage: () => (state) => {
+          state?.setHasHydrated(true);
+        },
       }
     ),
     { name: "AuthStore" }
