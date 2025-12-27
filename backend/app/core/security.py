@@ -8,13 +8,10 @@ password hashing, JWT token generation, and validation.
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
+import bcrypt
 import jwt
-from passlib.context import CryptContext
 
 from app.core.config import settings
-
-# Password hashing context
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -28,7 +25,10 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     Returns:
         bool: True if the password matches, False otherwise.
     """
-    result: bool = pwd_context.verify(plain_password, hashed_password)
+    result: bool = bcrypt.checkpw(
+        plain_password.encode("utf-8"),
+        hashed_password.encode("utf-8"),
+    )
     return result
 
 
@@ -42,8 +42,9 @@ def get_password_hash(password: str) -> str:
     Returns:
         str: The hashed password.
     """
-    result: str = pwd_context.hash(password)
-    return result
+    salt: bytes = bcrypt.gensalt()
+    hashed: bytes = bcrypt.hashpw(password.encode("utf-8"), salt)
+    return hashed.decode("utf-8")
 
 
 def create_access_token(

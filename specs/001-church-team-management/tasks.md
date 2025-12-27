@@ -82,12 +82,12 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
 
 ### T0.4 - Base de données initiale ⏱️ 4h 🔴
 
-- [ ] **T0.4.1** Créer modèle `Organization` avec SQLAlchemy
-- [ ] **T0.4.2** Créer modèle `User` avec champs de base
-- [ ] **T0.4.3** Créer modèle `RefreshToken`
-- [ ] **T0.4.4** Générer migration initiale Alembic
-- [ ] **T0.4.5** Créer script de seed pour données de test
-- [ ] **T0.4.6** Tester la connexion DB et migrations
+- [x] **T0.4.1** Créer modèle `Organization` avec SQLAlchemy
+- [x] **T0.4.2** Créer modèle `User` avec champs de base
+- [x] **T0.4.3** Créer modèle `RefreshToken`
+- [x] **T0.4.4** Générer migration initiale Alembic
+- [x] **T0.4.5** Créer script de seed pour données de test
+- [x] **T0.4.6** Tester la connexion DB et migrations
 
 📦 Base de données avec tables User et Organization
 

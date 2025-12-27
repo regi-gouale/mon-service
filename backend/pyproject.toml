@@ -10,6 +10,7 @@ dependencies = [
     "aiofiles>=25.1.0",
     "alembic>=1.17.2",
     "asyncpg>=0.31.0",
+    "bcrypt>=4.0.0",
     "celery>=5.6.0",
     "email-validator>=2.3.0",
     "fastapi>=0.127.1",
@@ -70,13 +71,16 @@ disallow_untyped_defs = true
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
-module = ["celery.*", "passlib.*", "jose.*", "jwt.*", "pydantic_settings.*"]
+module = ["celery.*", "passlib.*", "jose.*", "jwt.*", "pydantic_settings.*", "bcrypt.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
 addopts = "-v --cov=app --cov-report=term-missing"
+markers = [
+    "integration: marks tests as integration tests (require running PostgreSQL)",
+]
 
 [tool.coverage.run]
 source = ["app"]
