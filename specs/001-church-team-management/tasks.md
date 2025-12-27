@@ -73,7 +73,7 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
   hooks/
   types/
   ```
-- [ ] **T0.3.4** Configurer TanStack Query provider
+- [x] **T0.3.4** Configurer TanStack Query provider
 - [x] **T0.3.5** Configurer Zustand store de base
 - [x] **T0.3.6** Créer client API avec fetch wrapper et gestion erreurs
 - [ ] **T0.3.7** Configurer next-intl pour i18n (fr par défaut)
