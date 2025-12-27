@@ -18,7 +18,7 @@ SaaS de gestion d'équipes pour les départements d'église permettant d'organis
 
 ```
 mon-service/
-├── backend/                 # API FastAPI (Python 3.11+)
+├── backend/                 # API FastAPI (Python 3.13+)
 │   ├── app/
 │   │   ├── api/v1/routes/  # Endpoints API
 │   │   ├── core/           # Configuration, sécurité
