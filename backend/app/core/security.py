@@ -80,7 +80,7 @@ def create_access_token(
         to_encode.update(extra_claims)
 
     encoded_jwt: str = jwt.encode(
-        to_encode, settings.secret_key, algorithm=settings.algorithm
+        to_encode, settings.secret_key, algorithm=settings.jwt_algorithm
     )
     return encoded_jwt
 
@@ -112,7 +112,7 @@ def create_refresh_token(
     }
 
     encoded_jwt: str = jwt.encode(
-        to_encode, settings.secret_key, algorithm=settings.algorithm
+        to_encode, settings.secret_key, algorithm=settings.jwt_algorithm
     )
     return encoded_jwt
 
@@ -132,6 +132,6 @@ def decode_token(token: str) -> dict[str, Any]:
         jwt.InvalidTokenError: If the token is invalid.
     """
     decoded: dict[str, Any] = jwt.decode(
-        token, settings.secret_key, algorithms=[settings.algorithm]
+        token, settings.secret_key, algorithms=[settings.jwt_algorithm]
     )
     return decoded
