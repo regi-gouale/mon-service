@@ -17,6 +17,7 @@ import {
   IconUsers,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 
 export default function DashboardPage() {
   const t = useTranslations("Dashboard");
@@ -92,6 +93,8 @@ export default function DashboardPage() {
             variant="outline"
             className="flex h-auto flex-col gap-2 py-6"
             aria-label={tNav("availability")}
+            render={<Link href="/dashboard/availability" />}
+            nativeButton={false}
           >
             <IconCalendar className="h-6 w-6" />
             <span className="text-sm font-medium">{tNav("availability")}</span>
@@ -100,6 +103,8 @@ export default function DashboardPage() {
             variant="outline"
             className="flex h-auto flex-col gap-2 py-6"
             aria-label={tNav("planning")}
+            render={<Link href="/dashboard/planning" />}
+            nativeButton={false}
           >
             <IconClipboardList className="h-6 w-6" />
             <span className="text-sm font-medium">{tNav("planning")}</span>
@@ -108,6 +113,8 @@ export default function DashboardPage() {
             variant="outline"
             className="flex h-auto flex-col gap-2 py-6"
             aria-label={tNav("team")}
+            render={<Link href="/dashboard/team" />}
+            nativeButton={false}
           >
             <IconUsers className="h-6 w-6" />
             <span className="text-sm font-medium">{tNav("team")}</span>
@@ -116,6 +123,8 @@ export default function DashboardPage() {
             variant="outline"
             className="flex h-auto flex-col gap-2 py-6"
             aria-label={tNav("settings")}
+            render={<Link href="/dashboard/settings" />}
+            nativeButton={false}
           >
             <IconSettings className="h-6 w-6" />
             <span className="text-sm font-medium">{tNav("settings")}</span>
