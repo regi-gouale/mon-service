@@ -1,0 +1,33 @@
+# Prettier ignore patterns for Church Team Management Frontend
+
+# Dependencies
+node_modules/
+
+# Build outputs
+.next/
+out/
+build/
+dist/
+
+# Package manager files
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Generated files
+next-env.d.ts
+*.generated.ts
+
+# IDE
+.vscode/
+.idea/
+
+# Coverage
+coverage/
+
+# Public assets (may have specific formatting)
+public/
+
+# Cache
+.cache/
+*.cache

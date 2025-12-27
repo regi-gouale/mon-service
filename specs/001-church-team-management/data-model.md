@@ -1,7 +1,7 @@
 # Data Model: Church Team Management SaaS
 
-**Feature**: 001-church-team-management  
-**Date**: 2025-12-27  
+**Feature**: 001-church-team-management
+**Date**: 2025-12-27
 **Purpose**: Définir les entités, relations et règles de validation
 
 ## Diagramme des Relations

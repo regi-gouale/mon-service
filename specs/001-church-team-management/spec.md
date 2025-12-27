@@ -1,8 +1,8 @@
 # Feature Specification: Church Team Management SaaS
 
-**Feature Branch**: `001-church-team-management`  
-**Created**: 2025-12-27  
-**Status**: Draft  
+**Feature Branch**: `001-church-team-management`
+**Created**: 2025-12-27
+**Status**: Draft
 **Input**: SaaS de gestion d'équipes pour les départements d'église permettant d'organiser les plannings, la communication et la logistique des services et événements.
 
 ## User Scenarios & Testing _(mandatory)_

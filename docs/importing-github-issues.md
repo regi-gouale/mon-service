@@ -278,10 +278,10 @@ gh issue list --label epic:infrastructure \
 
 ## FAQ
 
-**Q: Can I run this multiple times?**  
+**Q: Can I run this multiple times?**
 A: Yes, it's safe. Duplicate issues won't be created, only new ones.
 
-**Q: Can I modify issues after creation?**  
+**Q: Can I modify issues after creation?**
 A: Yes, edit them in GitHub or via CLI:
 
 ```bash
@@ -289,13 +289,13 @@ gh issue edit 123 --title "New title"
 gh issue edit 123 --label priority:critical
 ```
 
-**Q: Can I delete issues if something goes wrong?**  
+**Q: Can I delete issues if something goes wrong?**
 A: Yes, delete via GitHub UI or close them. Script won't re-create closed issues.
 
-**Q: How do I update the issue descriptions?**  
+**Q: How do I update the issue descriptions?**
 A: Edit `github-issues.md` and use the script again. New issues will be created for modified ones.
 
-**Q: Can I export the issues for backup?**  
+**Q: Can I export the issues for backup?**
 A: Yes:
 
 ```bash
