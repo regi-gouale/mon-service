@@ -7,6 +7,12 @@ It is idempotent - running it multiple times will not create duplicate data.
 Usage:
     python -m app.scripts.seed_dev
 
+Environment Variables:
+    SEED_ADMIN_PASSWORD: Password for admin user (default: auto-generated)
+    SEED_MANAGER_PASSWORD: Password for manager user (default: auto-generated)
+    SEED_MEMBER_PASSWORD: Password for member users (default: auto-generated)
+    SEED_GUEST_PASSWORD: Password for guest user (default: auto-generated)
+
 Data created:
     - 1 Organization (Test Church)
     - 5 Users (1 admin + 4 members)
@@ -14,6 +20,8 @@ Data created:
 """
 
 import asyncio
+import hashlib
+import os
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
@@ -29,6 +37,38 @@ from app.core.database import async_session_maker
 from app.models import Organization, User, UserRole
 
 # =============================================================================
+# Password Generation
+# =============================================================================
+
+
+def get_dev_password(role: str) -> str:
+    """
+    Get password for a role from environment or generate a deterministic one.
+
+    For development only - generates predictable passwords based on role.
+    In CI/CD, set environment variables for specific passwords.
+
+    Args:
+        role: The user role (admin, manager, member, guest)
+
+    Returns:
+        str: The password for the role
+    """
+    env_var = f"SEED_{role.upper()}_PASSWORD"
+    env_password = os.environ.get(env_var)
+
+    if env_password:
+        return env_password
+
+    # Generate a deterministic password for dev (based on role + secret)
+    # This avoids hardcoding passwords while keeping dev predictable
+    secret = os.environ.get("SECRET_KEY", "dev-seed-secret")
+    hash_input = f"{role}:{secret}:dev-seed"
+    hash_value = hashlib.sha256(hash_input.encode()).hexdigest()[:8]
+    return f"Dev{role.capitalize()}{hash_value}!"
+
+
+# =============================================================================
 # Seed Data Definitions
 # =============================================================================
 
@@ -40,58 +80,67 @@ ORGANIZATION_DATA: dict[str, Any] = {
     "is_active": True,
 }
 
-USERS_DATA: list[dict[str, Any]] = [
-    {
-        "email": "admin@test-church.org",
-        "password": "Admin123!",
-        "first_name": "Admin",
-        "last_name": "User",
-        "phone": "+33612345678",
-        "role": UserRole.ADMIN,
-        "email_verified": True,
-        "is_active": True,
-    },
-    {
-        "email": "manager@test-church.org",
-        "password": "Manager123!",
-        "first_name": "Marie",
-        "last_name": "Manager",
-        "phone": "+33612345679",
-        "role": UserRole.MANAGER,
-        "email_verified": True,
-        "is_active": True,
-    },
-    {
-        "email": "member1@test-church.org",
-        "password": "Member123!",
-        "first_name": "Pierre",
-        "last_name": "Membre",
-        "phone": "+33612345680",
-        "role": UserRole.MEMBER,
-        "email_verified": True,
-        "is_active": True,
-    },
-    {
-        "email": "member2@test-church.org",
-        "password": "Member123!",
-        "first_name": "Sophie",
-        "last_name": "Dupont",
-        "phone": "+33612345681",
-        "role": UserRole.MEMBER,
-        "email_verified": True,
-        "is_active": True,
-    },
-    {
-        "email": "guest@test-church.org",
-        "password": "Guest123!",
-        "first_name": "Jean",
-        "last_name": "Invité",
-        "phone": None,
-        "role": UserRole.GUEST,
-        "email_verified": False,
-        "is_active": True,
-    },
-]
+
+def get_users_data() -> list[dict[str, Any]]:
+    """
+    Get users data with passwords from environment or generated.
+
+    Returns:
+        list[dict[str, Any]]: List of user data dictionaries
+    """
+    return [
+        {
+            "email": "admin@test-church.org",
+            "password": get_dev_password("admin"),
+            "first_name": "Admin",
+            "last_name": "User",
+            "phone": "+33612345678",
+            "role": UserRole.ADMIN,
+            "email_verified": True,
+            "is_active": True,
+        },
+        {
+            "email": "manager@test-church.org",
+            "password": get_dev_password("manager"),
+            "first_name": "Marie",
+            "last_name": "Manager",
+            "phone": "+33612345679",
+            "role": UserRole.MANAGER,
+            "email_verified": True,
+            "is_active": True,
+        },
+        {
+            "email": "member1@test-church.org",
+            "password": get_dev_password("member"),
+            "first_name": "Pierre",
+            "last_name": "Membre",
+            "phone": "+33612345680",
+            "role": UserRole.MEMBER,
+            "email_verified": True,
+            "is_active": True,
+        },
+        {
+            "email": "member2@test-church.org",
+            "password": get_dev_password("member"),
+            "first_name": "Sophie",
+            "last_name": "Dupont",
+            "phone": "+33612345681",
+            "role": UserRole.MEMBER,
+            "email_verified": True,
+            "is_active": True,
+        },
+        {
+            "email": "guest@test-church.org",
+            "password": get_dev_password("guest"),
+            "first_name": "Jean",
+            "last_name": "Invité",
+            "phone": None,
+            "role": UserRole.GUEST,
+            "email_verified": False,
+            "is_active": True,
+        },
+    ]
+
 
 # Future seed data (when models are available)
 # DEPARTMENTS_DATA = [
@@ -151,8 +200,9 @@ async def seed_users(session: AsyncSession, organization: Organization) -> list[
         list[User]: List of created or existing users.
     """
     users = []
+    users_data = get_users_data()
 
-    for user_data in USERS_DATA:
+    for user_data in users_data:
         # Check if user already exists
         result = await session.execute(
             select(User).where(User.email == user_data["email"])
@@ -164,16 +214,19 @@ async def seed_users(session: AsyncSession, organization: Organization) -> list[
             users.append(user)
             continue
 
-        # Create new user
-        password = user_data.pop("password")
+        # Create new user - extract password before spreading user_data
+        password = user_data["password"]
         user = User(
             organization_id=organization.id,
-            **user_data,
+            email=user_data["email"],
+            first_name=user_data["first_name"],
+            last_name=user_data["last_name"],
+            phone=user_data["phone"],
+            role=user_data["role"],
+            email_verified=user_data["email_verified"],
+            is_active=user_data["is_active"],
         )
         user.set_password(password)
-
-        # Restore password in data dict for potential re-runs
-        user_data["password"] = password
 
         session.add(user)
         await session.flush()
