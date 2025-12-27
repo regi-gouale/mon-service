@@ -22,6 +22,9 @@ interface RegisterData {
   lastName: string;
 }
 
+// Google OAuth configuration
+const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
+
 interface AuthResponse {
   user: {
     id: string;
@@ -204,6 +207,43 @@ export function useAuth() {
     [setLoading]
   );
 
+  // Login with Google
+  const loginWithGoogle = useCallback(async () => {
+    if (!GOOGLE_CLIENT_ID) {
+      toast.error("Google OAuth n'est pas configuré");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // Create OAuth2 URL for Google Sign-In
+      const redirectUri = `${window.location.origin}/api/auth/callback/google`;
+      const scope = "openid email profile";
+      const responseType = "code";
+      const state = crypto.randomUUID();
+
+      // Store state for CSRF protection
+      sessionStorage.setItem("google_oauth_state", state);
+
+      const googleAuthUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+      googleAuthUrl.searchParams.set("client_id", GOOGLE_CLIENT_ID);
+      googleAuthUrl.searchParams.set("redirect_uri", redirectUri);
+      googleAuthUrl.searchParams.set("response_type", responseType);
+      googleAuthUrl.searchParams.set("scope", scope);
+      googleAuthUrl.searchParams.set("state", state);
+      googleAuthUrl.searchParams.set("access_type", "offline");
+      googleAuthUrl.searchParams.set("prompt", "consent");
+
+      // Redirect to Google OAuth
+      window.location.href = googleAuthUrl.toString();
+    } catch (error) {
+      console.error("Google login error:", error);
+      toast.error("Erreur lors de la connexion avec Google");
+      setLoading(false);
+    }
+  }, [setLoading]);
+
   // Auto-refresh token before expiry
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -224,6 +264,7 @@ export function useAuth() {
     isAuthenticated,
     isLoading,
     login,
+    loginWithGoogle,
     register,
     logout,
     refreshToken,

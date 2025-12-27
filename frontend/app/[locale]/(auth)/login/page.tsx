@@ -16,7 +16,7 @@ import { useState } from "react";
 export default function LoginPage() {
   const t = useTranslations("Auth");
   const tCommon = useTranslations("Common");
-  const { login, isLoading } = useAuth();
+  const { login, loginWithGoogle, isLoading } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -98,7 +98,13 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <Button type="button" variant="outline" className="w-full" disabled={isLoading}>
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full"
+        disabled={isLoading}
+        onClick={loginWithGoogle}
+      >
         <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
           <path
             fill="currentColor"

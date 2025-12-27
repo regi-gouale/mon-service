@@ -16,7 +16,7 @@ import { useState } from "react";
 export default function RegisterPage() {
   const t = useTranslations("Auth");
   const tCommon = useTranslations("Common");
-  const { register, isLoading } = useAuth();
+  const { register, loginWithGoogle, isLoading } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -193,7 +193,13 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      <Button type="button" variant="outline" className="w-full" disabled={isLoading}>
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full"
+        disabled={isLoading}
+        onClick={loginWithGoogle}
+      >
         <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
           <path
             fill="currentColor"
