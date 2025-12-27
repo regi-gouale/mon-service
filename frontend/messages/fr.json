@@ -18,18 +18,23 @@
     "no": "Non",
     "required": "Requis",
     "optional": "Optionnel",
-    "actions": "Actions"
+    "actions": "Actions",
+    "app": "Gestion d'équipes"
   },
   "Navigation": {
     "home": "Accueil",
     "dashboard": "Tableau de bord",
     "team": "Équipe",
+    "teams": "Équipes",
     "planning": "Planning",
     "availability": "Disponibilités",
     "notifications": "Notifications",
     "settings": "Paramètres",
     "profile": "Profil",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "navigation": "Navigation",
+    "more": "Plus",
+    "tasks": "Tâches"
   },
   "Auth": {
     "login": "Connexion",

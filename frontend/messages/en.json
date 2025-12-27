@@ -18,18 +18,23 @@
     "no": "No",
     "required": "Required",
     "optional": "Optional",
-    "actions": "Actions"
+    "actions": "Actions",
+    "app": "Team Management"
   },
   "Navigation": {
     "home": "Home",
     "dashboard": "Dashboard",
     "team": "Team",
+    "teams": "Teams",
     "planning": "Planning",
     "availability": "Availability",
     "notifications": "Notifications",
     "settings": "Settings",
     "profile": "Profile",
-    "logout": "Logout"
+    "logout": "Logout",
+    "navigation": "Navigation",
+    "more": "More",
+    "tasks": "Tasks"
   },
   "Auth": {
     "login": "Login",

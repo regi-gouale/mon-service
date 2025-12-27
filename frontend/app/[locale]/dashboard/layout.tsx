@@ -1,14 +1,16 @@
 /**
  * Dashboard Layout
- * Main layout for authenticated dashboard pages
+ * Main layout for authenticated dashboard pages with sidebar navigation
  */
 
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { AppSidebar } from "@/components/layouts/app-sidebar";
+import { Separator } from "@/components/ui/separator";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useRouter } from "@/i18n/navigation";
 import { useAuthStore } from "@/stores/auth";
-import { IconBell, IconLoader2, IconUser } from "@tabler/icons-react";
+import { IconLoader2 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { ReactNode, useEffect } from "react";
 
@@ -18,7 +20,6 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const t = useTranslations("Common");
-  const tNav = useTranslations("Navigation");
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuthStore();
 
@@ -47,38 +48,26 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <div className="bg-background min-h-screen">
-      {/* Header */}
-      <header className="bg-card border-b">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center">
-              <h1 className="text-foreground text-xl font-semibold">Mon Service</h1>
-            </div>
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        {/* Header */}
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator orientation="vertical" className="mr-2 h-4" />
+          <h1 className="text-foreground text-lg font-semibold">Mon Service</h1>
+        </header>
 
-            <nav className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" aria-label={tNav("notifications")}>
-                <IconBell className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" aria-label={tNav("profile")}>
-                <IconUser className="h-5 w-5" />
-              </Button>
-            </nav>
-          </div>
-        </div>
-      </header>
+        {/* Main Content */}
+        <main className="flex-1 p-4 md:p-6">{children}</main>
 
-      {/* Main Content */}
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">{children}</main>
-
-      {/* Footer */}
-      <footer className="bg-card mt-auto border-t">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+        {/* Footer */}
+        <footer className="border-t px-4 py-4">
           <p className="text-muted-foreground text-center text-sm">
             © 2025 Mon Service. Tous droits réservés.
           </p>
-        </div>
-      </footer>
-    </div>
+        </footer>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
