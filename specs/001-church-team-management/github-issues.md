@@ -29,6 +29,7 @@ Ce fichier contient toutes les issues à créer sur GitHub depuis le fichier `ta
 Initialiser la structure du monorepo avec les dossiers `backend/` et `frontend/` suivant la Clean Architecture.
 
 **Acceptance Criteria**:
+
 - [ ] Dossiers `backend/` et `frontend/` créés
 - [ ] Structure de base dans chaque dossier
 - [ ] README.md à la racine avec instructions de setup
@@ -48,12 +49,14 @@ Initialiser la structure du monorepo avec les dossiers `backend/` et `frontend/`
 Créer le fichier `docker-compose.yml` à la racine du projet avec tous les services nécessaires pour le développement local.
 
 **Services requis**:
+
 - PostgreSQL 15+ (port 5432)
 - Redis 7+ (port 6379)
 - MailHog (ports 1025 SMTP, 8025 web)
-- MinIO (ports 9000 API, 9001 console) - *optionnel*
+- MinIO (ports 9000 API, 9001 console) - _optionnel_
 
 **Acceptance Criteria**:
+
 - [ ] Tous les services démarrent sans erreur: `docker compose up -d`
 - [ ] Healthchecks implémentés
 - [ ] Volumes persistants configurés
@@ -73,6 +76,7 @@ Créer le fichier `docker-compose.yml` à la racine du projet avec tous les serv
 Créer les fichiers `.env.example` dans `backend/` et `frontend/` avec toutes les variables d'environnement nécessaires.
 
 **Variables Backend**:
+
 - APP_NAME, APP_ENV, DEBUG
 - DATABASE_URL, REDIS_URL
 - JWT_SECRET_KEY, ACCESS_TOKEN_EXPIRE_MINUTES
@@ -80,12 +84,14 @@ Créer les fichiers `.env.example` dans `backend/` et `frontend/` avec toutes le
 - SMTP_HOST, SMTP_PORT, MAIL_FROM
 
 **Variables Frontend**:
+
 - NEXT_PUBLIC_API_URL
 - NEXT_PUBLIC_WS_URL
 - BETTER_AUTH_SECRET, BETTER_AUTH_URL
 - NEXT_PUBLIC_ENABLE_ANALYTICS
 
 **Acceptance Criteria**:
+
 - [ ] `.env.example` dans backend/ avec toutes les variables
 - [ ] `.env.example` dans frontend/ avec toutes les variables
 - [ ] Commentaires explicatifs pour chaque variable
@@ -105,6 +111,7 @@ Créer les fichiers `.env.example` dans `backend/` et `frontend/` avec toutes le
 Créer un `Makefile` à la racine avec les commandes principales pour le développement.
 
 **Commandes requises**:
+
 ```bash
 make up              # Docker compose up
 make down            # Docker compose down
@@ -117,6 +124,7 @@ make migrate         # Appliquer les migrations
 ```
 
 **Acceptance Criteria**:
+
 - [ ] Makefile créé à la racine
 - [ ] Toutes les commandes fonctionnent
 - [ ] Help message avec `make help`
@@ -134,12 +142,14 @@ make migrate         # Appliquer les migrations
 Configurer les pre-commit hooks pour vérifier la qualité du code avant chaque commit.
 
 **Hooks à configurer**:
+
 - ruff (Python linting)
 - prettier (frontend formatting)
 - commitlint (conventional commits)
 - no-commit-to-branch (protection main/master)
 
 **Acceptance Criteria**:
+
 - [ ] `.pre-commit-config.yaml` créé
 - [ ] Hooks s'exécutent avant commit
 - [ ] Commits non-conformes sont bloqués
@@ -157,6 +167,7 @@ Configurer les pre-commit hooks pour vérifier la qualité du code avant chaque 
 Initialiser le projet Python dans `backend/` avec `pyproject.toml` et gérer les dépendances avec `uv`.
 
 **Contenu pyproject.toml**:
+
 - Métadonnées du projet (name, version, description)
 - Python version requirement (3.11+)
 - Dépendances principales
@@ -164,6 +175,7 @@ Initialiser le projet Python dans `backend/` avec `pyproject.toml` et gérer les
 - Scripts pytest, mypy, ruff
 
 **Acceptance Criteria**:
+
 - [ ] `pyproject.toml` créé avec toutes les sections
 - [ ] `uv venv` crée l'environnement virtuel
 - [ ] Dépendances installées avec `uv pip install -r requirements.txt`
@@ -181,6 +193,7 @@ Initialiser le projet Python dans `backend/` avec `pyproject.toml` et gérer les
 Créer la structure de répertoires suivant Clean Architecture dans `backend/app/`.
 
 **Structure requise**:
+
 ```
 backend/
 ├── app/
@@ -211,6 +224,7 @@ backend/
 ```
 
 **Acceptance Criteria**:
+
 - [ ] Tous les répertoires créés
 - [ ] `__init__.py` dans chaque dossier
 - [ ] Structure prête pour le code
@@ -227,6 +241,7 @@ backend/
 Créer la classe Settings avec Pydantic v2 pour gérer les variables d'environnement.
 
 **Configuration à inclure**:
+
 - APP_NAME, APP_ENV, DEBUG
 - DATABASE settings (url, pool_size, echo)
 - REDIS settings
@@ -237,6 +252,7 @@ Créer la classe Settings avec Pydantic v2 pour gérer les variables d'environne
 - Celery settings
 
 **Acceptance Criteria**:
+
 - [ ] `Settings` class créée avec Pydantic v2
 - [ ] Validation des variables d'environnement au startup
 - [ ] Settings utilisable partout via `from app.core.config import settings`
@@ -254,6 +270,7 @@ Créer la classe Settings avec Pydantic v2 pour gérer les variables d'environne
 Configurer SQLAlchemy 2.0 avec support async pour la base de données PostgreSQL.
 
 **Contenu app/core/database.py**:
+
 - `AsyncEngine` et `async_sessionmaker`
 - `get_db()` dependency pour FastAPI
 - Connexion pooling
@@ -261,6 +278,7 @@ Configurer SQLAlchemy 2.0 avec support async pour la base de données PostgreSQL
 - Context manager pour transactions
 
 **Acceptance Criteria**:
+
 - [ ] Engine créé avec URL async (postgresql+asyncpg)
 - [ ] Sessions async fonctionnelles
 - [ ] get_db() works avec FastAPI dependencies
@@ -278,11 +296,13 @@ Configurer SQLAlchemy 2.0 avec support async pour la base de données PostgreSQL
 Initialiser Alembic pour gérer les migrations de schéma de base de données.
 
 **Configuration**:
+
 - `alembic init` avec target_metadata
 - Script `env.py` configuré pour async
 - Première migration de base
 
 **Acceptance Criteria**:
+
 - [ ] `alembic/` directory créé
 - [ ] `alembic.ini` configuré
 - [ ] `alembic upgrade head` fonctionne
@@ -300,6 +320,7 @@ Initialiser Alembic pour gérer les migrations de schéma de base de données.
 Créer le fichier principal FastAPI avec configuration de base.
 
 **Contenu app/main.py**:
+
 - FastAPI app instance
 - CORS middleware
 - Logging middleware
@@ -309,6 +330,7 @@ Créer le fichier principal FastAPI avec configuration de base.
 - Startup/shutdown events
 
 **Acceptance Criteria**:
+
 - [ ] App démarre sans erreur: `uvicorn app.main:app --reload`
 - [ ] GET `/health` retourne 200
 - [ ] CORS configuré selon .env
@@ -326,12 +348,14 @@ Créer le fichier principal FastAPI avec configuration de base.
 Configurer la journalisation JSON structurée avec correlation_id pour tracer les requêtes.
 
 **Requirements**:
+
 - Tous les logs en JSON
 - correlation_id généré par requête
 - correlation_id dans les headers de réponse
 - Support pour Loki/ELK stack
 
 **Acceptance Criteria**:
+
 - [ ] Logs sortent en JSON
 - [ ] Chaque requête a correlation_id unique
 - [ ] correlation_id visible dans logs et headers
@@ -349,6 +373,7 @@ Configurer la journalisation JSON structurée avec correlation_id pour tracer le
 Initialiser le projet frontend Next.js 14+ avec App Router et TypeScript strict mode.
 
 **Configuration**:
+
 - `create-next-app@latest` avec options:
   - App Router: Yes
   - TypeScript: Yes
@@ -358,6 +383,7 @@ Initialiser le projet frontend Next.js 14+ avec App Router et TypeScript strict 
   - Turbopack: Yes (optionnel)
 
 **Acceptance Criteria**:
+
 - [ ] `next dev` démarre sans erreur
 - [ ] `tsconfig.json` avec `"strict": true`
 - [ ] `next lint` fonctionne
@@ -375,6 +401,7 @@ Initialiser le projet frontend Next.js 14+ avec App Router et TypeScript strict 
 Configurer TailwindCSS et installer les composants Shadcn/ui.
 
 **Composants Shadcn à installer**:
+
 - Button
 - Input
 - Card
@@ -387,6 +414,7 @@ Configurer TailwindCSS et installer les composants Shadcn/ui.
 - Toast/Toaster
 
 **Acceptance Criteria**:
+
 - [ ] Tailwind fonctionne
 - [ ] Shadcn/ui installé et configuré
 - [ ] Composants importables depuis `@/components/ui`
@@ -404,6 +432,7 @@ Configurer TailwindCSS et installer les composants Shadcn/ui.
 Créer la structure de répertoires du frontend.
 
 **Structure requise**:
+
 ```
 frontend/src/
 ├── app/
@@ -438,6 +467,7 @@ frontend/src/
 ```
 
 **Acceptance Criteria**:
+
 - [ ] Structure créée
 - [ ] Tous les layout.tsx en place
 - [ ] Page racine dans app/
@@ -454,12 +484,14 @@ frontend/src/
 Installer et configurer TanStack Query (React Query v5) pour la gestion du state serveur.
 
 **Configuration**:
+
 - Installer `@tanstack/react-query`
 - Créer `QueryClientProvider` wrapper
 - Configurer cache time, stale time, retry policies
 - Créer hooks personnalisés pour API calls
 
 **Acceptance Criteria**:
+
 - [ ] `QueryClientProvider` dans root layout
 - [ ] API requests utilisant useQuery/useMutation
 - [ ] Caching et refetching fonctionnels
@@ -477,10 +509,12 @@ Installer et configurer TanStack Query (React Query v5) pour la gestion du state
 Configurer Zustand pour la gestion du state client (authentification, UI).
 
 **Stores initiaux**:
+
 - `stores/auth.ts` - user, accessToken, isAuthenticated
 - `stores/ui.ts` - theme, sidebarOpen, notifications
 
 **Acceptance Criteria**:
+
 - [ ] Zustand configuré
 - [ ] Auth store fonctionnel
 - [ ] Hooks de store utilisables partout
@@ -498,6 +532,7 @@ Configurer Zustand pour la gestion du state client (authentification, UI).
 Créer un client API wrapper pour les appels HTTP avec gestion d'erreurs et interceptors.
 
 **Features**:
+
 - Wrapper autour de fetch
 - Headers par défaut (Authorization, Content-Type)
 - Retry logic avec exponential backoff
@@ -506,6 +541,7 @@ Créer un client API wrapper pour les appels HTTP avec gestion d'erreurs et inte
 - Support SSR (Server Components)
 
 **Acceptance Criteria**:
+
 - [ ] `lib/api.ts` créé
 - [ ] API calls utilisent le wrapper
 - [ ] Token refresh automatique
@@ -523,12 +559,14 @@ Créer un client API wrapper pour les appels HTTP avec gestion d'erreurs et inte
 Configurer next-intl pour la gestion des traductions multilingues (français par défaut).
 
 **Configuration**:
+
 - Installer `next-intl`
 - Créer messages.json pour FR et EN
 - Configurer middleware next-intl
 - Setup locale directory structure
 
 **Acceptance Criteria**:
+
 - [ ] i18n configuré
 - [ ] Messages en FR disponibles
 - [ ] Switchable à EN
@@ -546,6 +584,7 @@ Configurer next-intl pour la gestion des traductions multilingues (français par
 Créer le modèle SQLAlchemy pour Organization (tenant principal).
 
 **Champs**:
+
 - id (UUID, PK)
 - name (str, required)
 - slug (str, unique)
@@ -556,10 +595,12 @@ Créer le modèle SQLAlchemy pour Organization (tenant principal).
 - updated_at (datetime, auto)
 
 **Relations**:
+
 - users (OneToMany)
 - departments (OneToMany)
 
 **Acceptance Criteria**:
+
 - [ ] Modèle créé dans `app/models/organization.py`
 - [ ] Constraints et validations en place
 - [ ] Indexes créés (slug unique)
@@ -577,6 +618,7 @@ Créer le modèle SQLAlchemy pour Organization (tenant principal).
 Créer le modèle User avec champs d'authentification et profil.
 
 **Champs**:
+
 - id (UUID, PK)
 - email (str, unique, required)
 - first_name (str, required)
@@ -591,12 +633,14 @@ Créer le modèle User avec champs d'authentification et profil.
 - organization_id (UUID, FK, required)
 
 **Relations**:
+
 - organization (ManyToOne)
 - refresh_tokens (OneToMany)
 - members (OneToMany)
 - notifications (OneToMany)
 
 **Acceptance Criteria**:
+
 - [ ] Modèle complet dans `app/models/user.py`
 - [ ] Index sur email et organization_id
 - [ ] Password hasher intégré (bcrypt)
@@ -614,6 +658,7 @@ Créer le modèle User avec champs d'authentification et profil.
 Créer le modèle pour gérer les refresh tokens.
 
 **Champs**:
+
 - id (UUID, PK)
 - user_id (UUID, FK, required)
 - token (str, unique, required)
@@ -622,9 +667,11 @@ Créer le modèle pour gérer les refresh tokens.
 - is_revoked (bool, default False)
 
 **Relations**:
+
 - user (ManyToOne)
 
 **Acceptance Criteria**:
+
 - [ ] Modèle créé
 - [ ] Index sur (user_id, expires_at)
 - [ ] Cleanup tokens expirés possible
@@ -641,12 +688,14 @@ Créer le modèle pour gérer les refresh tokens.
 Générer la première migration Alembic avec les modèles Organization, User, RefreshToken.
 
 **Steps**:
+
 1. Ajouter modèles à `Base.metadata`
 2. Configurer `env.py` avec target_metadata
 3. `alembic revision --autogenerate -m "Initial schema"`
 4. Vérifier le fichier généré
 
 **Acceptance Criteria**:
+
 - [ ] Migration file créé dans `alembic/versions/`
 - [ ] Contient CREATE TABLE pour 3 modèles
 - [ ] Contient les indexes et constraints
@@ -664,6 +713,7 @@ Générer la première migration Alembic avec les modèles Organization, User, R
 Créer un script pour peupler la DB avec données de test.
 
 **Données de test**:
+
 - 1 Organization (Test Church)
 - 5 Users (admin + 4 members)
 - 2 Departments (Praise & Worship, Ushers)
@@ -672,6 +722,7 @@ Créer un script pour peupler la DB avec données de test.
 **Script**: `backend/app/scripts/seed_dev.py`
 
 **Acceptance Criteria**:
+
 - [ ] Script créé et exécutable
 - [ ] `python -m app.scripts.seed_dev` peuple DB
 - [ ] Données cohérentes et testables
@@ -689,6 +740,7 @@ Créer un script pour peupler la DB avec données de test.
 Vérifier que la connexion DB et les migrations fonctionnent correctement.
 
 **Tests**:
+
 - [ ] Docker compose PostgreSQL démarre
 - [ ] `alembic upgrade head` fonctionne
 - [ ] Tables sont créées dans la DB
@@ -696,6 +748,7 @@ Vérifier que la connexion DB et les migrations fonctionnent correctement.
 - [ ] Requêtes SELECT fonctionnent
 
 **Acceptance Criteria**:
+
 - [ ] DB fully operational
 - [ ] Pas d'erreurs de connexion
 - [ ] Documentation dans `docs/database.md`
@@ -712,6 +765,7 @@ Vérifier que la connexion DB et les migrations fonctionnent correctement.
 Créer un workflow GitHub Actions qui exécute les tests backend sur chaque push/PR.
 
 **Workflow**:
+
 - Déclenché: push sur main et PR
 - Services: PostgreSQL, Redis
 - Steps:
@@ -722,6 +776,7 @@ Créer un workflow GitHub Actions qui exécute les tests backend sur chaque push
   5. Upload coverage
 
 **Acceptance Criteria**:
+
 - [ ] Workflow créé dans `.github/workflows/test-backend.yml`
 - [ ] Tests passent sur chaque PR
 - [ ] Coverage reports générés
@@ -739,6 +794,7 @@ Créer un workflow GitHub Actions qui exécute les tests backend sur chaque push
 Créer un workflow GitHub Actions pour tester le frontend.
 
 **Workflow**:
+
 - Déclenché: push sur main et PR
 - Node version: 20+
 - Steps:
@@ -751,6 +807,7 @@ Créer un workflow GitHub Actions pour tester le frontend.
   7. Build check
 
 **Acceptance Criteria**:
+
 - [ ] Workflow créé dans `.github/workflows/test-frontend.yml`
 - [ ] Build succeeds on every PR
 - [ ] Linting passes
@@ -768,6 +825,7 @@ Créer un workflow GitHub Actions pour tester le frontend.
 Configurer Codecov (ou similaire) pour tracker la couverture de tests.
 
 **Configuration**:
+
 - Backend coverage.xml depuis pytest
 - Frontend coverage.json depuis Vitest
 - Upload à Codecov
@@ -775,6 +833,7 @@ Configurer Codecov (ou similaire) pour tracker la couverture de tests.
 - PR comments avec coverage delta
 
 **Acceptance Criteria**:
+
 - [ ] Coverage rapports générés
 - [ ] Codecov intégré
 - [ ] Badges dans README
@@ -792,11 +851,13 @@ Configurer Codecov (ou similaire) pour tracker la couverture de tests.
 Créer un workflow GitHub Actions pour vérifier la qualité du code.
 
 **Linters**:
+
 - Backend: ruff, mypy
 - Frontend: eslint, prettier
 - Commits: commitlint
 
 **Acceptance Criteria**:
+
 - [ ] Workflow créé dans `.github/workflows/lint.yml`
 - [ ] Tous les linters s'exécutent
 - [ ] Lint errors bloquent la merge
@@ -813,6 +874,7 @@ Créer un workflow GitHub Actions pour vérifier la qualité du code.
 Créer documentation pour le processus de déploiement.
 
 **Documentation**:
+
 - Backend: Dokploy deployment
 - Frontend: Vercel deployment
 - Environment variables par environment
@@ -822,6 +884,7 @@ Créer documentation pour le processus de déploiement.
 **Deliverable**: `docs/deployment.md`
 
 **Acceptance Criteria**:
+
 - [ ] Documentation écrite
 - [ ] Deployment checklist
 - [ ] Rollback procedures
@@ -830,7 +893,7 @@ Créer documentation pour le processus de déploiement.
 
 ## Epic 1: Inscription et Authentification (P1)
 
-*(Voir tasks.md pour les 135+ issues complètes)*
+_(Voir tasks.md pour les 135+ issues complètes)_
 
 ---
 
@@ -839,6 +902,7 @@ Créer documentation pour le processus de déploiement.
 Total des issues: **135+** tâches réparties sur **11 épics** + infrastructure
 
 Pour importer dans GitHub:
+
 1. Créer un projet "Church Team Management"
 2. Importer les issues une par une (ou utiliser GitHub CLI)
 3. Assigner par équipe (backend/frontend)
