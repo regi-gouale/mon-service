@@ -41,7 +41,7 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
 
 ### T0.2 - Setup Backend FastAPI ⏱️ 6h 🔴
 
-- [ ] **T0.2.1** Initialiser projet Python avec `pyproject.toml` et `uv`
+- [x] **T0.2.1** Initialiser projet Python avec `pyproject.toml` et `uv`
 - [ ] **T0.2.2** Créer structure Clean Architecture:
   ```
   app/api/v1/routes/
