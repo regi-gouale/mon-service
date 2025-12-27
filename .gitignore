@@ -1,0 +1,47 @@
+# ===================
+# MonService .gitignore
+# ===================
+
+# ===== OS =====
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ===== IDE / Editors =====
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.sublime-workspace
+*.sublime-project
+
+# ===== Environment =====
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+
+# ===== Docker =====
+docker-compose.override.yml
+
+# ===== Logs =====
+*.log
+logs/
+
+# ===== Secrets =====
+*.pem
+*.key
+*.crt
+secrets/
+
+# ===== Temporary =====
+tmp/
+temp/
+*.tmp
+*.bak
