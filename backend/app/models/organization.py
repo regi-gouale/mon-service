@@ -6,13 +6,17 @@ This is the main tenant entity for multi-tenancy support.
 """
 
 from datetime import datetime
+from typing import TYPE_CHECKING
 from uuid import uuid4
 
 from sqlalchemy import Boolean, DateTime, Index, String, Text, func
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
+
+if TYPE_CHECKING:
+    from app.models.user import User
 
 
 class Organization(Base):
@@ -102,13 +106,12 @@ class Organization(Base):
     )
 
     # Relationships (lazy loading by default for async compatibility)
-    # Note: Users relationship will be added when User model is created (T0.4.2)
-    # users: Mapped[list["User"]] = relationship(
-    #     "User",
-    #     back_populates="organization",
-    #     lazy="selectin",
-    #     cascade="all, delete-orphan",
-    # )
+    users: Mapped[list["User"]] = relationship(
+        "User",
+        back_populates="organization",
+        lazy="selectin",
+        cascade="all, delete-orphan",
+    )
 
     # Note: departments relationship will be added when Department model is created
     # departments: Mapped[list["Department"]] = relationship(
