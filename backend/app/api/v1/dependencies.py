@@ -22,7 +22,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.database import get_db
+from app.core.database import get_db as get_db  # noqa: PLC0414
 from app.core.logging import get_logger
 from app.core.security import decode_token
 from app.models.user import User, UserRole

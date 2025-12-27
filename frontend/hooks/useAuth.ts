@@ -75,14 +75,33 @@ export function useAuth() {
     async (data: RegisterData) => {
       try {
         setLoading(true);
+        console.log("Register request data:", JSON.stringify(data, null, 2));
         const response = await apiClient.post<AuthResponse>(ENDPOINTS.AUTH.REGISTER, data);
+        console.log("Register response:", response);
 
         setLoginState(response.user, response.accessToken, response.refreshToken);
         toast.success(SUCCESS_MESSAGES.REGISTER_SUCCESS);
         router.push(ROUTES.DASHBOARD);
       } catch (error) {
-        const apiError = error as { message: string };
-        toast.error(apiError.message || "Erreur d'inscription");
+        const apiError = error as {
+          message: string;
+          details?: { detail?: Array<{ loc: string[]; msg: string }> | string };
+        };
+        console.error("Register error details:", apiError);
+
+        // Extract detailed error message
+        let errorMessage = apiError.message || "Erreur d'inscription";
+        if (apiError.details?.detail) {
+          if (Array.isArray(apiError.details.detail)) {
+            errorMessage = apiError.details.detail
+              .map((e) => `${e.loc?.join(".")}: ${e.msg}`)
+              .join(", ");
+          } else if (typeof apiError.details.detail === "string") {
+            errorMessage = apiError.details.detail;
+          }
+        }
+
+        toast.error(errorMessage);
         throw error;
       } finally {
         setLoading(false);
@@ -167,6 +186,24 @@ export function useAuth() {
     [router, setLoading]
   );
 
+  // Verify email
+  const verifyEmail = useCallback(
+    async (token: string) => {
+      try {
+        setLoading(true);
+        await apiClient.post(ENDPOINTS.AUTH.VERIFY_EMAIL, { token });
+        toast.success("Email vérifié avec succès");
+      } catch (error) {
+        const apiError = error as { message: string };
+        toast.error(apiError.message || "Erreur lors de la vérification");
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [setLoading]
+  );
+
   // Auto-refresh token before expiry
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -192,5 +229,6 @@ export function useAuth() {
     refreshToken,
     forgotPassword,
     resetPassword,
+    verifyEmail,
   };
 }

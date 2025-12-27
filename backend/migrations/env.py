@@ -34,6 +34,9 @@ from app.core.database import Base
 from app.models.organization import Organization  # noqa: F401
 from app.models.user import User  # noqa: F401
 from app.models.refresh_token import RefreshToken  # noqa: F401
+from app.models.department import Department  # noqa: F401
+from app.models.member import Member  # noqa: F401
+from app.models.availability import Availability  # noqa: F401
 
 # Alembic Config object
 config = context.config
@@ -73,7 +76,7 @@ def run_migrations_offline() -> None:
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
         compare_type=True,
-        compare_server_default=True,
+        compare_server_default=False,  # Disabled due to JSON comparison issues with asyncpg
     )
 
     with context.begin_transaction():
@@ -93,7 +96,7 @@ def do_run_migrations(connection) -> None:
         connection=connection,
         target_metadata=target_metadata,
         compare_type=True,
-        compare_server_default=True,
+        compare_server_default=False,  # Disabled due to JSON comparison issues with asyncpg
     )
 
     with context.begin_transaction():

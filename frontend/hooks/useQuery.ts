@@ -89,14 +89,36 @@ export function useDepartmentMembers(
  * Hook for fetching member availabilities
  */
 export function useMemberAvailabilities(
-  memberId: string,
-  month: string,
+  departmentId: string,
+  year: number,
+  month: number,
   options?: Omit<UseQueryOptions<unknown, ApiError>, "queryKey" | "queryFn">
 ) {
+  const monthStr = `${year}-${String(month).padStart(2, "0")}`;
   return useQuery({
-    queryKey: queryKeys.availabilities.member(memberId, month),
-    queryFn: () => api.get(`/availabilities/members/${memberId}?month=${month}`),
-    enabled: !!memberId && !!month,
+    queryKey: queryKeys.availabilities.member(departmentId, monthStr),
+    queryFn: () =>
+      api.get(`/departments/${departmentId}/members/me/availabilities?year=${year}&month=${month}`),
+    enabled: !!departmentId && !!year && !!month,
+    ...options,
+  });
+}
+
+/**
+ * Hook for fetching my availabilities (current user)
+ */
+export function useMyAvailabilities(
+  departmentId: string,
+  year: number,
+  month: number,
+  options?: Omit<UseQueryOptions<unknown, ApiError>, "queryKey" | "queryFn">
+) {
+  const monthStr = `${year}-${String(month).padStart(2, "0")}`;
+  return useQuery({
+    queryKey: ["my-availabilities", departmentId, monthStr],
+    queryFn: () =>
+      api.get(`/departments/${departmentId}/members/me/availabilities?year=${year}&month=${month}`),
+    enabled: !!departmentId && !!year && !!month,
     ...options,
   });
 }
@@ -106,13 +128,35 @@ export function useMemberAvailabilities(
  */
 export function useDepartmentAvailabilities(
   departmentId: string,
-  month: string,
+  year: number,
+  month: number,
   options?: Omit<UseQueryOptions<unknown, ApiError>, "queryKey" | "queryFn">
 ) {
+  const monthStr = `${year}-${String(month).padStart(2, "0")}`;
   return useQuery({
-    queryKey: queryKeys.availabilities.department(departmentId, month),
-    queryFn: () => api.get(`/departments/${departmentId}/availabilities?month=${month}`),
-    enabled: !!departmentId && !!month,
+    queryKey: queryKeys.availabilities.department(departmentId, monthStr),
+    queryFn: () =>
+      api.get(`/departments/${departmentId}/availabilities?year=${year}&month=${month}`),
+    enabled: !!departmentId && !!year && !!month,
+    ...options,
+  });
+}
+
+/**
+ * Hook for fetching availability deadline
+ */
+export function useAvailabilityDeadline(
+  departmentId: string,
+  year: number,
+  month: number,
+  options?: Omit<UseQueryOptions<unknown, ApiError>, "queryKey" | "queryFn">
+) {
+  const monthStr = `${year}-${String(month).padStart(2, "0")}`;
+  return useQuery({
+    queryKey: ["availability-deadline", departmentId, monthStr],
+    queryFn: () =>
+      api.get(`/departments/${departmentId}/availabilities/deadline?year=${year}&month=${month}`),
+    enabled: !!departmentId && !!year && !!month,
     ...options,
   });
 }
@@ -277,21 +321,67 @@ export function useDeleteMutation<TData = void, TVariables = string>(
 }
 
 /**
- * Hook for updating member availabilities
+ * Hook for updating member availabilities (current user) with optimistic updates
  */
-export function useUpdateAvailabilities(departmentId: string, memberId: string) {
+export function useUpdateMyAvailabilities(departmentId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: { month: string; dates: string[] }) =>
-      api.put(`/departments/${departmentId}/members/me/availabilities`, data),
-    onSuccess: (_, variables) => {
-      // Invalidate both member and department availabilities
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.availabilities.member(memberId, variables.month),
+    mutationFn: (data: {
+      year: number;
+      month: number;
+      unavailableDates: Array<{ date: string; reason?: string; isAllDay: boolean }>;
+    }) => api.put(`/departments/${departmentId}/members/me/availabilities`, data),
+
+    // Optimistic update
+    onMutate: async (newData) => {
+      const monthStr = `${newData.year}-${String(newData.month).padStart(2, "0")}`;
+      const queryKey = ["my-availabilities", departmentId, monthStr];
+
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey });
+
+      // Snapshot the previous value
+      const previousData = queryClient.getQueryData(queryKey);
+
+      // Optimistically update to the new value
+      queryClient.setQueryData(queryKey, (old: unknown) => {
+        if (!old || typeof old !== "object") {
+          return {
+            memberId: "",
+            memberName: "",
+            year: newData.year,
+            month: newData.month,
+            unavailableDates: newData.unavailableDates,
+          };
+        }
+        return {
+          ...old,
+          unavailableDates: newData.unavailableDates,
+        };
       });
+
+      // Return context with the previous value
+      return { previousData, queryKey };
+    },
+
+    // If the mutation fails, rollback to the previous value
+    onError: (_err, _newData, context) => {
+      if (context?.previousData !== undefined) {
+        queryClient.setQueryData(context.queryKey, context.previousData);
+      }
+    },
+
+    // Always refetch after error or success
+    onSettled: (_, __, variables) => {
+      const monthStr = `${variables.year}-${String(variables.month).padStart(2, "0")}`;
+      // Invalidate my availabilities
       queryClient.invalidateQueries({
-        queryKey: queryKeys.availabilities.department(departmentId, variables.month),
+        queryKey: ["my-availabilities", departmentId, monthStr],
+      });
+      // Invalidate department availabilities
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.availabilities.department(departmentId, monthStr),
       });
     },
   });
