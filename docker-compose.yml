@@ -45,7 +45,7 @@ services:
     image: redis:7-alpine
     container_name: church-team-redis
     restart: unless-stopped
-    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy volatile-lru  # avoid evicting non-TTL Celery/session keys
     volumes:
       - redis_data:/data
     ports:
@@ -61,8 +61,7 @@ services:
       - church-team-network
 
   # =============================================================================
-  # Mailpit - Serveur SMTP de développement pour emails (remplace MailHog)
-  # Alternative moderne compatible ARM64/AMD64
+  # Mailpit - Serveur SMTP de développement pour emails
   # =============================================================================
   mailpit:
     image: axllent/mailpit:latest
