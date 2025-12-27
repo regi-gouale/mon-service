@@ -14,12 +14,6 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // Internationalization
-  i18n: {
-    locales: ["fr", "en"],
-    defaultLocale: "fr",
-  },
-
   // Headers for security and performance
   async headers() {
     return [
