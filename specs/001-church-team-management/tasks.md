@@ -97,7 +97,7 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
 - [x] **T0.5.2** Créer workflow GitHub Actions pour tests frontend
 - [x] **T0.5.3** Configurer coverage reports (Codecov ou similaire)
 - [x] **T0.5.4** Créer workflow de lint sur chaque PR
-- [ ] **T0.5.5** Documenter le workflow de déploiement
+- [x] **T0.5.5** Documenter le workflow de déploiement
 
 📦 CI/CD fonctionnel sur chaque PR
 
