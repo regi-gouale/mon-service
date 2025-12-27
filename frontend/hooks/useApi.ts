@@ -3,7 +3,7 @@
  * Generic API request hook with loading and error states
  */
 
-import { apiClient, ApiError } from "@/lib/api";
+import { apiClient, type ApiError, type ApiRequestConfig } from "@/lib/api";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
@@ -12,6 +12,8 @@ interface UseApiOptions {
   showErrorToast?: boolean;
   successMessage?: string;
   errorMessage?: string;
+  /** API request configuration (retries, timeout, etc.) */
+  requestConfig?: ApiRequestConfig;
 }
 
 interface UseApiState<T> {

@@ -1,3 +1,4 @@
+import { ApiProvider } from "@/components/providers/api-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
@@ -31,10 +32,12 @@ export default function RootLayout({
     <html lang="fr" suppressHydrationWarning className={notoSans.variable}>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <QueryProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            {children}
-            <Toaster />
-          </ThemeProvider>
+          <ApiProvider>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+              {children}
+              <Toaster />
+            </ThemeProvider>
+          </ApiProvider>
         </QueryProvider>
       </body>
     </html>
