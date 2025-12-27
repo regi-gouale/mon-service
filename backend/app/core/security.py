@@ -47,6 +47,10 @@ def get_password_hash(password: str) -> str:
     return hashed.decode("utf-8")
 
 
+# Alias for consistency with requirements
+hash_password = get_password_hash
+
+
 def create_access_token(
     subject: str | int,
     expires_delta: timedelta | None = None,

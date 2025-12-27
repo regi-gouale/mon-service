@@ -109,7 +109,7 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
 
 ### T1.1 - Backend Auth Core ⏱️ 8h 🔴
 
-- [ ] **T1.1.1** Créer `app/core/security.py`:
+- [x] **T1.1.1** Créer `app/core/security.py`:
   - Hashing bcrypt pour passwords
   - Génération JWT avec python-jose
   - Validation tokens
