@@ -1,5 +1,10 @@
-import { ComponentExample } from "@/components/component-example";
+import { routing } from "@/i18n/routing";
+import { redirect } from "next/navigation";
 
-export default function Page() {
-  return <ComponentExample />;
+/**
+ * Root Page
+ * Redirects to the default locale
+ */
+export default function RootPage() {
+  redirect(`/${routing.defaultLocale}`);
 }

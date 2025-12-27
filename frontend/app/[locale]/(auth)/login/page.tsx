@@ -9,11 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
-import { ROUTES } from "@/lib/constants";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 export default function LoginPage() {
+  const t = useTranslations("Auth");
+  const tCommon = useTranslations("Common");
   const { login, isLoading } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
@@ -40,15 +42,13 @@ export default function LoginPage() {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Connexion</h2>
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-          Connectez-vous à votre compte
-        </p>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t("login")}</h2>
+        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{t("loginDescription")}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t("email")}</Label>
           <Input
             id="email"
             name="email"
@@ -62,7 +62,7 @@ export default function LoginPage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="password">Mot de passe</Label>
+          <Label htmlFor="password">{t("password")}</Label>
           <Input
             id="password"
             name="password"
@@ -77,15 +77,15 @@ export default function LoginPage() {
 
         <div className="flex items-center justify-between text-sm">
           <Link
-            href={ROUTES.FORGOT_PASSWORD}
+            href="/forgot-password"
             className="text-blue-600 hover:text-blue-500 dark:text-blue-400"
           >
-            Mot de passe oublié ?
+            {t("forgotPassword")}
           </Link>
         </div>
 
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Connexion..." : "Se connecter"}
+          {isLoading ? tCommon("loading") : t("login")}
         </Button>
       </form>
 
@@ -117,16 +117,16 @@ export default function LoginPage() {
             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
           />
         </svg>
-        Google
+        {t("loginWithGoogle")}
       </Button>
 
       <div className="text-center text-sm">
-        <span className="text-gray-600 dark:text-gray-400">Pas encore de compte ? </span>
+        <span className="text-gray-600 dark:text-gray-400">{t("noAccount")} </span>
         <Link
-          href={ROUTES.REGISTER}
+          href="/register"
           className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
         >
-          S&apos;inscrire
+          {t("register")}
         </Link>
       </div>
     </div>
