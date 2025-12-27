@@ -31,9 +31,9 @@ from app.core.database import Base
 
 # Import all models here so they are registered with Base.metadata
 # This ensures Alembic can detect all tables for autogenerate
-# Example:
-# from app.models.user import User
-# from app.models.organization import Organization
+from app.models.organization import Organization  # noqa: F401
+from app.models.user import User  # noqa: F401
+from app.models.refresh_token import RefreshToken  # noqa: F401
 
 # Alembic Config object
 config = context.config
