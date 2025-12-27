@@ -49,20 +49,28 @@ services:
       - church-team-network
 
   # =============================================================================
-  # MailHog - Serveur SMTP de développement pour emails
+  # Mailpit - Serveur SMTP de développement pour emails (remplace MailHog)
+  # Alternative moderne compatible ARM64/AMD64
   # =============================================================================
-  mailhog:
-    image: mailhog/mailhog:latest
-    container_name: church-team-mailhog
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: church-team-mailpit
     restart: unless-stopped
     ports:
-      - "${MAILHOG_SMTP_PORT:-1025}:1025"  # SMTP
-      - "${MAILHOG_UI_PORT:-8025}:8025"    # Web UI
+      - "${MAILPIT_SMTP_PORT:-1025}:1025"  # SMTP
+      - "${MAILPIT_UI_PORT:-8025}:8025"    # Web UI
     environment:
-      MH_STORAGE: maildir
-      MH_MAILDIR_PATH: /maildir
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: "true"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "true"
     volumes:
-      - mailhog_data:/maildir
+      - mailpit_data:/data
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8025/api/v1/info"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
     networks:
       - church-team-network
 
@@ -83,7 +91,7 @@ services:
       - "${MINIO_API_PORT:-9000}:9000"     # API S3
       - "${MINIO_CONSOLE_PORT:-9001}:9001" # Console Web
     healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
       timeout: 20s
       retries: 3
@@ -124,7 +132,7 @@ volumes:
     driver: local
   redis_data:
     driver: local
-  mailhog_data:
+  mailpit_data:
     driver: local
   minio_data:
     driver: local
