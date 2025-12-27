@@ -1,0 +1,1697 @@
+openapi: 3.1.0
+info:
+  title: Church Team Management API
+  description: API pour la gestion d'équipes de départements d'église
+  version: 1.0.0
+  contact:
+    name: Mon Service
+    email: support@monservice.com
+
+servers:
+  - url: https://api.monservice.com/api/v1
+    description: Production
+  - url: https://staging-api.monservice.com/api/v1
+    description: Staging
+  - url: http://localhost:8000/api/v1
+    description: Development
+
+tags:
+  - name: Auth
+    description: Authentification et gestion des sessions
+  - name: Users
+    description: Gestion des utilisateurs
+  - name: Organizations
+    description: Gestion des organisations
+  - name: Departments
+    description: Gestion des départements
+  - name: Members
+    description: Gestion des membres
+  - name: Plannings
+    description: Gestion des plannings
+  - name: Availabilities
+    description: Gestion des indisponibilités
+  - name: Services
+    description: Gestion des services/événements
+  - name: DressCodes
+    description: Gestion des codes vestimentaires
+  - name: Inventory
+    description: Gestion de l'inventaire
+  - name: Reports
+    description: Comptes-rendus de service
+  - name: Events
+    description: Calendrier des événements
+  - name: ShoppingLists
+    description: Listes de courses
+  - name: Notifications
+    description: Notifications utilisateur
+
+security:
+  - BearerAuth: []
+
+paths:
+  # ============ AUTH ============
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Inscription d'un nouvel utilisateur
+      operationId: register
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "201":
+          description: Utilisateur créé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "409":
+          description: Email déjà utilisé
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Connexion utilisateur
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Connexion réussie
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Identifiants invalides
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Rafraîchir le token d'accès
+      operationId: refreshToken
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refresh_token]
+              properties:
+                refresh_token:
+                  type: string
+      responses:
+        "200":
+          description: Nouveau token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Refresh token invalide ou expiré
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Déconnexion (révoque le refresh token)
+      operationId: logout
+      responses:
+        "204":
+          description: Déconnexion réussie
+
+  /auth/forgot-password:
+    post:
+      tags: [Auth]
+      summary: Demande de réinitialisation de mot de passe
+      operationId: forgotPassword
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        "202":
+          description: Email envoyé si le compte existe
+
+  /auth/reset-password:
+    post:
+      tags: [Auth]
+      summary: Réinitialiser le mot de passe
+      operationId: resetPassword
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, password]
+              properties:
+                token:
+                  type: string
+                password:
+                  type: string
+                  minLength: 8
+      responses:
+        "200":
+          description: Mot de passe réinitialisé
+        "400":
+          description: Token invalide ou expiré
+
+  # ============ USERS ============
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Obtenir le profil de l'utilisateur connecté
+      operationId: getCurrentUser
+      responses:
+        "200":
+          description: Profil utilisateur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+    patch:
+      tags: [Users]
+      summary: Mettre à jour le profil
+      operationId: updateCurrentUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserRequest"
+      responses:
+        "200":
+          description: Profil mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+    delete:
+      tags: [Users]
+      summary: Supprimer son compte (RGPD)
+      operationId: deleteCurrentUser
+      responses:
+        "204":
+          description: Compte supprimé
+
+  /users/me/data-export:
+    get:
+      tags: [Users]
+      summary: Exporter ses données personnelles (RGPD)
+      operationId: exportUserData
+      responses:
+        "200":
+          description: Export des données
+          content:
+            application/json:
+              schema:
+                type: object
+
+  # ============ DEPARTMENTS ============
+  /departments:
+    get:
+      tags: [Departments]
+      summary: Lister les départements de l'organisation
+      operationId: listDepartments
+      responses:
+        "200":
+          description: Liste des départements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Department"
+    post:
+      tags: [Departments]
+      summary: Créer un département
+      operationId: createDepartment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDepartmentRequest"
+      responses:
+        "201":
+          description: Département créé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Department"
+
+  /departments/{departmentId}:
+    parameters:
+      - $ref: "#/components/parameters/DepartmentId"
+    get:
+      tags: [Departments]
+      summary: Obtenir un département
+      operationId: getDepartment
+      responses:
+        "200":
+          description: Détails du département
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Department"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      tags: [Departments]
+      summary: Mettre à jour un département
+      operationId: updateDepartment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDepartmentRequest"
+      responses:
+        "200":
+          description: Département mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Department"
+    delete:
+      tags: [Departments]
+      summary: Supprimer un département
+      operationId: deleteDepartment
+      responses:
+        "204":
+          description: Département supprimé
+
+  # ============ MEMBERS ============
+  /departments/{departmentId}/members:
+    parameters:
+      - $ref: "#/components/parameters/DepartmentId"
+    get:
+      tags: [Members]
+      summary: Lister les membres du département
+      operationId: listMembers
+      responses:
+        "200":
+          description: Liste des membres
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Member"
+
+  /departments/{departmentId}/invitations:
+    parameters:
+      - $ref: "#/components/parameters/DepartmentId"
+    post:
+      tags: [Members]
+      summary: Inviter un membre
+      operationId: inviteMember
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InviteMemberRequest"
+      responses:
+        "201":
+          description: Invitation envoyée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invitation"
+
+  /invitations/{token}/accept:
+    parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      tags: [Members]
+      summary: Accepter une invitation
+      operationId: acceptInvitation
+      responses:
+        "200":
+          description: Invitation acceptée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Member"
+        "400":
+          description: Invitation expirée ou invalide
+
+  /departments/{departmentId}/members/{memberId}:
+    parameters:
+      - $ref: "#/components/parameters/DepartmentId"
+      - $ref: "#/components/parameters/MemberId"
+    patch:
+      tags: [Members]
+      summary: Mettre à jour un membre (rôle, compétences)
+      operationId: updateMember
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMemberRequest"
+      responses:
+        "200":
+          description: Membre mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Member"
+    delete:
+      tags: [Members]
+      summary: Retirer un membre du département
+      operationId: removeMember
+      responses:
+        "204":
+          description: Membre retiré
+
+  # ============ AVAILABILITIES ============
+  /departments/{departmentId}/availabilities:
+    parameters:
+      - $ref: "#/components/parameters/DepartmentId"
+    get:
+      tags: [Availabilities]
+      summary: Lister les indisponibilités du département
+      operationId: listAvailabilities
+      parameters:
+        - name: month
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+            example: "2025-01-01"
+        - name: member_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Liste des indisponibilités
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Availability"
+
+  /departments/{departmentId}/members/me/availabilities:
+    parameters:
+      - $ref: "#/components/parameters/DepartmentId"
+    put:
+      tags: [Availabilities]
+      summary: Saisir ses indisponibilités pour un mois
+      operationId: setMyAvailabilities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetAvailabilitiesRequest"
+      responses:
+        "200":
+          description: Indisponibilités enregistrées
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Availability"
+
+  # ============ SERVICES ============
+  /departments/{departmentId}/services:
+    parameters:
+      - $ref: "#/components/parameters/DepartmentId"
+    get:
+      tags: [Services]
+      summary: Lister les services du département
+      operationId: listServices
+      parameters:
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Liste des services
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Service"
+    post:
+      tags: [Services]
+      summary: Créer un service
+      operationId: createService
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateServiceRequest"
+      responses:
+        "201":
+          description: Service créé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+
+  # ============ PLANNINGS ============
+  /departments/{departmentId}/plannings:
+    parameters:
+      - $ref: "#/components/parameters/DepartmentId"
+    get:
+      tags: [Plannings]
+      summary: Lister les plannings du département
+      operationId: listPlannings
+      responses:
+        "200":
+          description: Liste des plannings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Planning"
+    post:
+      tags: [Plannings]
+      summary: Créer un planning (draft)
+      operationId: createPlanning
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePlanningRequest"
+      responses:
+        "201":
+          description: Planning créé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Planning"
+
+  /departments/{departmentId}/plannings/{planningId}:
+    parameters:
+      - $ref: "#/components/parameters/DepartmentId"
+      - $ref: "#/components/parameters/PlanningId"
+    get:
+      tags: [Plannings]
+      summary: Obtenir un planning avec ses affectations
+      operationId: getPlanning
+      responses:
+        "200":
+          description: Détails du planning
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanningDetail"
+
+  /departments/{departmentId}/plannings/{planningId}/generate:
+    parameters:
+      - $ref: "#/components/parameters/DepartmentId"
+      - $ref: "#/components/parameters/PlanningId"
+    post:
+      tags: [Plannings]
+      summary: Générer automatiquement les affectations
+      operationId: generatePlanning
+      responses:
+        "202":
+          description: Génération lancée (async)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task_id:
+                    type: string
+                    format: uuid
+                  message:
+                    type: string
+
+  /departments/{departmentId}/plannings/{planningId}/publish:
+    parameters:
+      - $ref: "#/components/parameters/DepartmentId"
+      - $ref: "#/components/parameters/PlanningId"
+    post:
+      tags: [Plannings]
+      summary: Publier le planning
+      operationId: publishPlanning
+      responses:
+        "200":
+          description: Planning publié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Planning"
+
+  /departments/{departmentId}/plannings/{planningId}/assignments:
+    parameters:
+      - $ref: "#/components/parameters/DepartmentId"
+      - $ref: "#/components/parameters/PlanningId"
+    post:
+      tags: [Plannings]
+      summary: Ajouter/modifier une affectation manuelle
+      operationId: createAssignment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAssignmentRequest"
+      responses:
+        "201":
+          description: Affectation créée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanningAssignment"
+
+  /departments/{departmentId}/plannings/{planningId}/export:
+    parameters:
+      - $ref: "#/components/parameters/DepartmentId"
+      - $ref: "#/components/parameters/PlanningId"
+    get:
+      tags: [Plannings]
+      summary: Exporter le planning (PDF ou iCal)
+      operationId: exportPlanning
+      parameters:
+        - name: format
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [pdf, ical]
+      responses:
+        "200":
+          description: Fichier exporté
+          content:
+            application/pdf: {}
+            text/calendar: {}
+
+  # ============ DRESS CODES ============
+  /departments/{departmentId}/dress-codes:
+    parameters:
+      - $ref: "#/components/parameters/DepartmentId"
+    get:
+      tags: [DressCodes]
+      summary: Lister les codes vestimentaires
+      operationId: listDressCodes
+      responses:
+        "200":
+          description: Liste des dress codes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DressCode"
+    post:
+      tags: [DressCodes]
+      summary: Créer un code vestimentaire
+      operationId: createDressCode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDressCodeRequest"
+      responses:
+        "201":
+          description: Dress code créé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DressCode"
+
+  # ============ INVENTORY ============
+  /departments/{departmentId}/inventory:
+    parameters:
+      - $ref: "#/components/parameters/DepartmentId"
+    get:
+      tags: [Inventory]
+      summary: Lister l'inventaire
+      operationId: listInventory
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: condition
+          in: query
+          schema:
+            $ref: "#/components/schemas/ItemCondition"
+      responses:
+        "200":
+          description: Liste des articles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/InventoryItem"
+    post:
+      tags: [Inventory]
+      summary: Ajouter un article
+      operationId: createInventoryItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInventoryItemRequest"
+      responses:
+        "201":
+          description: Article créé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryItem"
+
+  # ============ REPORTS ============
+  /departments/{departmentId}/reports:
+    parameters:
+      - $ref: "#/components/parameters/DepartmentId"
+    get:
+      tags: [Reports]
+      summary: Lister les comptes-rendus
+      operationId: listReports
+      parameters:
+        - name: service_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Liste des rapports
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ServiceReport"
+    post:
+      tags: [Reports]
+      summary: Créer un compte-rendu
+      operationId: createReport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateReportRequest"
+      responses:
+        "201":
+          description: Rapport créé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceReport"
+
+  # ============ EVENTS ============
+  /departments/{departmentId}/events:
+    parameters:
+      - $ref: "#/components/parameters/DepartmentId"
+    get:
+      tags: [Events]
+      summary: Lister les événements du calendrier
+      operationId: listEvents
+      parameters:
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: type
+          in: query
+          schema:
+            $ref: "#/components/schemas/EventType"
+      responses:
+        "200":
+          description: Liste des événements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Event"
+    post:
+      tags: [Events]
+      summary: Créer un événement
+      operationId: createEvent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEventRequest"
+      responses:
+        "201":
+          description: Événement créé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+
+  # ============ SHOPPING LISTS ============
+  /departments/{departmentId}/shopping-lists:
+    parameters:
+      - $ref: "#/components/parameters/DepartmentId"
+    get:
+      tags: [ShoppingLists]
+      summary: Lister les listes de courses
+      operationId: listShoppingLists
+      responses:
+        "200":
+          description: Liste des listes de courses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ShoppingList"
+    post:
+      tags: [ShoppingLists]
+      summary: Créer une liste de courses
+      operationId: createShoppingList
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateShoppingListRequest"
+      responses:
+        "201":
+          description: Liste créée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShoppingList"
+
+  /departments/{departmentId}/shopping-lists/{listId}/items:
+    parameters:
+      - $ref: "#/components/parameters/DepartmentId"
+      - name: listId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    post:
+      tags: [ShoppingLists]
+      summary: Ajouter un article à la liste
+      operationId: addShoppingItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateShoppingItemRequest"
+      responses:
+        "201":
+          description: Article ajouté
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShoppingItem"
+
+  /departments/{departmentId}/shopping-lists/{listId}/items/{itemId}/purchase:
+    parameters:
+      - $ref: "#/components/parameters/DepartmentId"
+      - name: listId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: itemId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    post:
+      tags: [ShoppingLists]
+      summary: Marquer un article comme acheté
+      operationId: markItemPurchased
+      responses:
+        "200":
+          description: Article marqué comme acheté
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShoppingItem"
+
+  # ============ NOTIFICATIONS ============
+  /notifications:
+    get:
+      tags: [Notifications]
+      summary: Lister mes notifications
+      operationId: listNotifications
+      parameters:
+        - name: unread_only
+          in: query
+          schema:
+            type: boolean
+            default: false
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+            maximum: 100
+      responses:
+        "200":
+          description: Liste des notifications
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  notifications:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Notification"
+                  unread_count:
+                    type: integer
+
+  /notifications/{notificationId}/read:
+    parameters:
+      - name: notificationId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    post:
+      tags: [Notifications]
+      summary: Marquer une notification comme lue
+      operationId: markNotificationRead
+      responses:
+        "204":
+          description: Notification marquée comme lue
+
+  /notifications/read-all:
+    post:
+      tags: [Notifications]
+      summary: Marquer toutes les notifications comme lues
+      operationId: markAllNotificationsRead
+      responses:
+        "204":
+          description: Toutes les notifications marquées comme lues
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    DepartmentId:
+      name: departmentId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    MemberId:
+      name: memberId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    PlanningId:
+      name: planningId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    NotFound:
+      description: Ressource non trouvée
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    ValidationError:
+      description: Erreur de validation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+  schemas:
+    # ===== Common =====
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+            correlation_id:
+              type: string
+
+    # ===== Auth =====
+    RegisterRequest:
+      type: object
+      required: [email, password, first_name, last_name]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      required: [access_token, refresh_token, user]
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        token_type:
+          type: string
+          default: bearer
+        expires_in:
+          type: integer
+          description: Expiration en secondes
+        user:
+          $ref: "#/components/schemas/User"
+
+    # ===== User =====
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone:
+          type: string
+        avatar_url:
+          type: string
+        role:
+          $ref: "#/components/schemas/UserRole"
+        organization_id:
+          type: string
+          format: uuid
+        email_verified:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone:
+          type: string
+        avatar_url:
+          type: string
+        notification_preferences:
+          type: object
+
+    UserRole:
+      type: string
+      enum: [admin, manager, member, guest]
+
+    # ===== Department =====
+    Department:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        availability_deadline_days:
+          type: integer
+        is_active:
+          type: boolean
+        members_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    CreateDepartmentRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 255
+        description:
+          type: string
+        availability_deadline_days:
+          type: integer
+          minimum: 1
+          maximum: 30
+          default: 7
+
+    UpdateDepartmentRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        availability_deadline_days:
+          type: integer
+
+    # ===== Member =====
+    Member:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user:
+          $ref: "#/components/schemas/User"
+        role:
+          $ref: "#/components/schemas/MemberRole"
+        skills:
+          type: array
+          items:
+            type: string
+        status:
+          $ref: "#/components/schemas/MemberStatus"
+        joined_at:
+          type: string
+          format: date-time
+
+    MemberRole:
+      type: string
+      enum: [admin, manager, member]
+
+    MemberStatus:
+      type: string
+      enum: [pending, active, inactive]
+
+    InviteMemberRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+        role:
+          $ref: "#/components/schemas/MemberRole"
+          default: member
+
+    UpdateMemberRequest:
+      type: object
+      properties:
+        role:
+          $ref: "#/components/schemas/MemberRole"
+        skills:
+          type: array
+          items:
+            type: string
+          maxItems: 20
+
+    Invitation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        role:
+          $ref: "#/components/schemas/MemberRole"
+        status:
+          type: string
+          enum: [pending, accepted, expired, cancelled]
+        expires_at:
+          type: string
+          format: date-time
+
+    # ===== Availability =====
+    Availability:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        member_id:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        reason:
+          type: string
+        is_all_day:
+          type: boolean
+        start_time:
+          type: string
+          format: time
+        end_time:
+          type: string
+          format: time
+
+    SetAvailabilitiesRequest:
+      type: object
+      required: [month, unavailable_dates]
+      properties:
+        month:
+          type: string
+          format: date
+          description: Premier jour du mois
+        unavailable_dates:
+          type: array
+          items:
+            type: object
+            required: [date]
+            properties:
+              date:
+                type: string
+                format: date
+              reason:
+                type: string
+              is_all_day:
+                type: boolean
+                default: true
+              start_time:
+                type: string
+                format: time
+              end_time:
+                type: string
+                format: time
+
+    # ===== Service =====
+    Service:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        service_type:
+          type: string
+        date:
+          type: string
+          format: date
+        start_time:
+          type: string
+          format: time
+        end_time:
+          type: string
+          format: time
+        location:
+          type: string
+        dress_code:
+          $ref: "#/components/schemas/DressCode"
+        required_roles:
+          type: array
+          items:
+            type: object
+            properties:
+              role:
+                type: string
+              count:
+                type: integer
+
+    CreateServiceRequest:
+      type: object
+      required: [name, service_type, date, start_time]
+      properties:
+        name:
+          type: string
+        service_type:
+          type: string
+        date:
+          type: string
+          format: date
+        start_time:
+          type: string
+          format: time
+        end_time:
+          type: string
+          format: time
+        location:
+          type: string
+        dress_code_id:
+          type: string
+          format: uuid
+        required_roles:
+          type: array
+          items:
+            type: object
+            properties:
+              role:
+                type: string
+              count:
+                type: integer
+        is_recurring:
+          type: boolean
+        recurrence_rule:
+          type: string
+
+    # ===== Planning =====
+    Planning:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        month:
+          type: string
+          format: date
+        status:
+          $ref: "#/components/schemas/PlanningStatus"
+        confidence_score:
+          type: number
+          format: float
+        generated_at:
+          type: string
+          format: date-time
+        published_at:
+          type: string
+          format: date-time
+
+    PlanningStatus:
+      type: string
+      enum: [draft, generated, published, archived]
+
+    PlanningDetail:
+      allOf:
+        - $ref: "#/components/schemas/Planning"
+        - type: object
+          properties:
+            assignments:
+              type: array
+              items:
+                $ref: "#/components/schemas/PlanningAssignment"
+            services:
+              type: array
+              items:
+                $ref: "#/components/schemas/Service"
+
+    PlanningAssignment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        service:
+          $ref: "#/components/schemas/Service"
+        member:
+          $ref: "#/components/schemas/Member"
+        assigned_role:
+          type: string
+        status:
+          type: string
+          enum: [assigned, confirmed, declined, replaced]
+
+    CreatePlanningRequest:
+      type: object
+      required: [month]
+      properties:
+        month:
+          type: string
+          format: date
+          description: Premier jour du mois
+
+    CreateAssignmentRequest:
+      type: object
+      required: [service_id, member_id, assigned_role]
+      properties:
+        service_id:
+          type: string
+          format: uuid
+        member_id:
+          type: string
+          format: uuid
+        assigned_role:
+          type: string
+
+    # ===== DressCode =====
+    DressCode:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        image_urls:
+          type: array
+          items:
+            type: string
+
+    CreateDressCodeRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        image_urls:
+          type: array
+          items:
+            type: string
+          maxItems: 5
+
+    # ===== Inventory =====
+    InventoryItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        quantity:
+          type: integer
+        condition:
+          $ref: "#/components/schemas/ItemCondition"
+        image_url:
+          type: string
+        assigned_to:
+          $ref: "#/components/schemas/Member"
+        assigned_until:
+          type: string
+          format: date
+
+    ItemCondition:
+      type: string
+      enum: [new, good, fair, needs_repair, damaged, disposed]
+
+    CreateInventoryItemRequest:
+      type: object
+      required: [name, category]
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        quantity:
+          type: integer
+          default: 1
+        condition:
+          $ref: "#/components/schemas/ItemCondition"
+          default: good
+        image_url:
+          type: string
+
+    # ===== Report =====
+    ServiceReport:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        service:
+          $ref: "#/components/schemas/Service"
+        author:
+          $ref: "#/components/schemas/Member"
+        content:
+          type: string
+        highlights:
+          type: string
+        improvements:
+          type: string
+        attendees:
+          type: array
+          items:
+            $ref: "#/components/schemas/Member"
+        absentees:
+          type: array
+          items:
+            $ref: "#/components/schemas/Member"
+        image_urls:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+
+    CreateReportRequest:
+      type: object
+      required: [service_id, content]
+      properties:
+        service_id:
+          type: string
+          format: uuid
+        content:
+          type: string
+        highlights:
+          type: string
+        improvements:
+          type: string
+        attendees:
+          type: array
+          items:
+            type: string
+            format: uuid
+        absentees:
+          type: array
+          items:
+            type: string
+            format: uuid
+        image_urls:
+          type: array
+          items:
+            type: string
+
+    # ===== Event =====
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        event_type:
+          $ref: "#/components/schemas/EventType"
+        title:
+          type: string
+        description:
+          type: string
+        date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        member:
+          $ref: "#/components/schemas/Member"
+        is_recurring:
+          type: boolean
+
+    EventType:
+      type: string
+      enum: [birthday, trip, holiday, meeting, other]
+
+    CreateEventRequest:
+      type: object
+      required: [event_type, title, date]
+      properties:
+        event_type:
+          $ref: "#/components/schemas/EventType"
+        title:
+          type: string
+        description:
+          type: string
+        date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        member_id:
+          type: string
+          format: uuid
+        is_recurring:
+          type: boolean
+          default: false
+
+    # ===== Shopping List =====
+    ShoppingList:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        status:
+          type: string
+          enum: [active, completed, archived]
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ShoppingItem"
+        created_at:
+          type: string
+          format: date-time
+
+    ShoppingItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        category:
+          type: string
+        quantity:
+          type: integer
+        unit:
+          type: string
+        is_purchased:
+          type: boolean
+        purchased_by:
+          $ref: "#/components/schemas/Member"
+        purchased_at:
+          type: string
+          format: date-time
+        assigned_to:
+          $ref: "#/components/schemas/Member"
+
+    CreateShoppingListRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+
+    CreateShoppingItemRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+        quantity:
+          type: integer
+          default: 1
+        unit:
+          type: string
+        assigned_to:
+          type: string
+          format: uuid
+
+    # ===== Notification =====
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+        title:
+          type: string
+        message:
+          type: string
+        data:
+          type: object
+        is_read:
+          type: boolean
+        read_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
