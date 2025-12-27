@@ -1,6 +1,6 @@
 # MonService - Church Team Management SaaS
 
-[![Backend CI](https://github.com/regi-gouale/mon-service/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/regi-gouale/mon-service/actions/workflows/backend-ci.yml)
+[![Backend Tests](https://github.com/regi-gouale/mon-service/actions/workflows/test-backend.yml/badge.svg)](https://github.com/regi-gouale/mon-service/actions/workflows/test-backend.yml)
 [![Frontend CI](https://github.com/regi-gouale/mon-service/actions/workflows/frontend-ci.yml/badge.svg)](https://github.com/regi-gouale/mon-service/actions/workflows/frontend-ci.yml)
 
 SaaS de gestion d'équipes pour les départements d'église permettant d'organiser les plannings, la communication et la logistique des services et événements.
