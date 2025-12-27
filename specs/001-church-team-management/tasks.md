@@ -63,7 +63,7 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
 
 - [x] **T0.3.1** Initialiser projet Next.js 14+ avec App Router et TypeScript strict
 - [x] **T0.3.2** Configurer TailwindCSS et Shadcn/ui
-- [ ] **T0.3.3** Créer structure dossiers:
+- [x] **T0.3.3** Créer structure dossiers:
   ```
   app/(auth)/
   app/(dashboard)/
@@ -74,8 +74,8 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
   types/
   ```
 - [ ] **T0.3.4** Configurer TanStack Query provider
-- [ ] **T0.3.5** Configurer Zustand store de base
-- [ ] **T0.3.6** Créer client API avec fetch wrapper et gestion erreurs
+- [x] **T0.3.5** Configurer Zustand store de base
+- [x] **T0.3.6** Créer client API avec fetch wrapper et gestion erreurs
 - [ ] **T0.3.7** Configurer next-intl pour i18n (fr par défaut)
 
 📦 Frontend Next.js démarrant sans erreur
