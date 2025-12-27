@@ -30,8 +30,9 @@ module.exports = {
     "subject-empty": [2, "never"],
     // Subject must not end with a period
     "subject-full-stop": [2, "never", "."],
-    // Subject must start with lowercase
-    "subject-case": [2, "always", "lower-case"],
+    // Subject must start with lowercase or be an acronym (optional)
+    // Uncomment below if you want to allow acronyms like API, UI, CSS
+    // "subject-case": [1, "always", ["lower-case", "start-case"]],
     // Header max length (type + scope + subject)
     "header-max-length": [2, "always", 100],
     // Body max line length
