@@ -268,10 +268,13 @@ setup: ## Configuration initiale du projet
 	@echo "$(YELLOW)2. Installation des dépendances...$(NC)"
 	@make install
 	@echo ""
-	@echo "$(YELLOW)3. Démarrage des services Docker...$(NC)"
+	@echo "$(YELLOW)3. Installation des pre-commit hooks...$(NC)"
+	@make hooks-install
+	@echo ""
+	@echo "$(YELLOW)4. Démarrage des services Docker...$(NC)"
 	@make docker-up
 	@echo ""
-	@echo "$(YELLOW)4. Application des migrations...$(NC)"
+	@echo "$(YELLOW)5. Application des migrations...$(NC)"
 	@sleep 3
 	@make db-upgrade 2>/dev/null || echo "   ⚠️  Migrations non disponibles (à configurer)"
 	@echo ""
@@ -288,12 +291,24 @@ setup: ## Configuration initiale du projet
 # =============================================================================
 hooks-install: ## Installe les pre-commit hooks
 	@echo "$(BLUE)🪝 Installation des pre-commit hooks...$(NC)"
-	cd $(BACKEND_DIR) && uv run pre-commit install
-	@echo "$(GREEN)✅ Pre-commit hooks installés$(NC)"
+	cd $(BACKEND_DIR) && uv run pre-commit install --install-hooks
+	cd $(BACKEND_DIR) && uv run pre-commit install --hook-type commit-msg
+	@echo "$(GREEN)✅ Pre-commit hooks installés (pre-commit + commit-msg)$(NC)"
 
 hooks-run: ## Exécute les pre-commit hooks sur tous les fichiers
 	@echo "$(BLUE)🪝 Exécution des pre-commit hooks...$(NC)"
 	cd $(BACKEND_DIR) && uv run pre-commit run --all-files
+
+hooks-update: ## Met à jour les versions des pre-commit hooks
+	@echo "$(BLUE)🔄 Mise à jour des pre-commit hooks...$(NC)"
+	cd $(BACKEND_DIR) && uv run pre-commit autoupdate
+	@echo "$(GREEN)✅ Pre-commit hooks mis à jour$(NC)"
+
+hooks-uninstall: ## Désinstalle les pre-commit hooks
+	@echo "$(YELLOW)⚠️  Désinstallation des pre-commit hooks...$(NC)"
+	cd $(BACKEND_DIR) && uv run pre-commit uninstall
+	cd $(BACKEND_DIR) && uv run pre-commit uninstall --hook-type commit-msg
+	@echo "$(GREEN)✅ Pre-commit hooks désinstallés$(NC)"
 
 # =============================================================================
 # Celery (Workers)

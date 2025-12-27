@@ -1,6 +1,6 @@
 # Implementation Tasks: Church Team Management SaaS
 
-**Branch**: `001-church-team-management` | **Generated**: 2025-12-27  
+**Branch**: `001-church-team-management` | **Generated**: 2025-12-27
 **Plan**: [plan.md](plan.md) | **Spec**: [spec.md](spec.md) | **Data Model**: [data-model.md](data-model.md)
 
 ---
@@ -35,7 +35,7 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
 - [x] **T0.1.2** Créer `docker-compose.yml` avec PostgreSQL, Redis, Mailpit, MinIO
 - [x] **T0.1.3** Configurer les fichiers `.env.example` pour backend et frontend
 - [x] **T0.1.4** Créer le `Makefile` racine avec commandes unifiées
-- [ ] **T0.1.5** Configurer pre-commit hooks (ruff, eslint, prettier, commitlint)
+- [x] **T0.1.5** Configurer pre-commit hooks (ruff, eslint, prettier, commitlint)
 
 📦 Repository prêt pour développement local
 
@@ -680,6 +680,6 @@ graph LR
     T1 --> T5
 ```
 
-**MVP Minimal** (P0 + P1): ~140 heures  
-**MVP Complet** (+ P2): ~196 heures  
+**MVP Minimal** (P0 + P1): ~140 heures
+**MVP Complet** (+ P2): ~196 heures
 **Full Release** (+ P3 + P4): ~261 heures

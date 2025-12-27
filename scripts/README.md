@@ -112,7 +112,7 @@ optional arguments:
 
 Après exécution :
 
-✅ **135 issues créées** dans le repository  
+✅ **135 issues créées** dans le repository
 ✅ **Labels créés automatiquement**:
 
 - `priority:critical` (🔴 red)

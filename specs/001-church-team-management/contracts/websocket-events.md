@@ -4,9 +4,9 @@
 
 Ce document définit les événements WebSocket pour la communication temps réel dans l'application Church Team Management.
 
-**Technologie**: Socket.IO avec Redis Adapter  
-**Namespace**: `/ws`  
-**URL Production**: `wss://api.monservice.com/ws`  
+**Technologie**: Socket.IO avec Redis Adapter
+**Namespace**: `/ws`
+**URL Production**: `wss://api.monservice.com/ws`
 **URL Development**: `ws://localhost:8000/ws`
 
 ---

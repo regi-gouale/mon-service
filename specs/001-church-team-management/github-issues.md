@@ -2,8 +2,8 @@
 
 Ce fichier contient toutes les issues à créer sur GitHub depuis le fichier `tasks.md`.
 
-**Branch**: `001-church-team-management`  
-**Feature**: Church Team Management SaaS  
+**Branch**: `001-church-team-management`
+**Feature**: Church Team Management SaaS
 **Total Issues**: 135 tâches
 
 ---
@@ -21,8 +21,8 @@ Ce fichier contient toutes les issues à créer sur GitHub depuis le fichier `ta
 
 ### Issue T0.1.1 - Initialiser le repository avec structure backend/ et frontend/
 
-**Epic**: Infrastructure  
-**Priority**: 🔴 Critical  
+**Epic**: Infrastructure
+**Priority**: 🔴 Critical
 **Effort**: 2h
 
 **Description**:
@@ -41,8 +41,8 @@ Initialiser la structure du monorepo avec les dossiers `backend/` et `frontend/`
 
 ### Issue T0.1.2 - Créer docker-compose.yml avec PostgreSQL, Redis, MailHog, MinIO
 
-**Epic**: Infrastructure  
-**Priority**: 🔴 Critical  
+**Epic**: Infrastructure
+**Priority**: 🔴 Critical
 **Effort**: 1.5h
 
 **Description**:
@@ -68,8 +68,8 @@ Créer le fichier `docker-compose.yml` à la racine du projet avec tous les serv
 
 ### Issue T0.1.3 - Configurer les fichiers .env.example pour backend et frontend
 
-**Epic**: Infrastructure  
-**Priority**: 🔴 Critical  
+**Epic**: Infrastructure
+**Priority**: 🔴 Critical
 **Effort**: 1h
 
 **Description**:
@@ -103,8 +103,8 @@ Créer les fichiers `.env.example` dans `backend/` et `frontend/` avec toutes le
 
 ### Issue T0.1.4 - Créer le Makefile racine avec commandes unifiées
 
-**Epic**: Infrastructure  
-**Priority**: 🟡 Important  
+**Epic**: Infrastructure
+**Priority**: 🟡 Important
 **Effort**: 1h
 
 **Description**:
@@ -134,8 +134,8 @@ make migrate         # Appliquer les migrations
 
 ### Issue T0.1.5 - Configurer pre-commit hooks (ruff, eslint, prettier, commitlint)
 
-**Epic**: Infrastructure  
-**Priority**: 🟡 Important  
+**Epic**: Infrastructure
+**Priority**: 🟡 Important
 **Effort**: 1.5h
 
 **Description**:
@@ -159,8 +159,8 @@ Configurer les pre-commit hooks pour vérifier la qualité du code avant chaque 
 
 ### Issue T0.2.1 - Initialiser projet Python avec pyproject.toml et uv
 
-**Epic**: Infrastructure  
-**Priority**: 🔴 Critical  
+**Epic**: Infrastructure
+**Priority**: 🔴 Critical
 **Effort**: 1h
 
 **Description**:
@@ -185,8 +185,8 @@ Initialiser le projet Python dans `backend/` avec `pyproject.toml` et gérer les
 
 ### Issue T0.2.2 - Créer structure Clean Architecture
 
-**Epic**: Infrastructure  
-**Priority**: 🔴 Critical  
+**Epic**: Infrastructure
+**Priority**: 🔴 Critical
 **Effort**: 2h
 
 **Description**:
@@ -233,8 +233,8 @@ backend/
 
 ### Issue T0.2.3 - Configurer app/core/config.py avec Pydantic Settings
 
-**Epic**: Infrastructure  
-**Priority**: 🔴 Critical  
+**Epic**: Infrastructure
+**Priority**: 🔴 Critical
 **Effort**: 1.5h
 
 **Description**:
@@ -262,8 +262,8 @@ Créer la classe Settings avec Pydantic v2 pour gérer les variables d'environne
 
 ### Issue T0.2.4 - Configurer SQLAlchemy 2.0 async avec app/core/database.py
 
-**Epic**: Infrastructure  
-**Priority**: 🔴 Critical  
+**Epic**: Infrastructure
+**Priority**: 🔴 Critical
 **Effort**: 2h
 
 **Description**:
@@ -288,8 +288,8 @@ Configurer SQLAlchemy 2.0 avec support async pour la base de données PostgreSQL
 
 ### Issue T0.2.5 - Configurer Alembic pour les migrations
 
-**Epic**: Infrastructure  
-**Priority**: 🔴 Critical  
+**Epic**: Infrastructure
+**Priority**: 🔴 Critical
 **Effort**: 1.5h
 
 **Description**:
@@ -312,8 +312,8 @@ Initialiser Alembic pour gérer les migrations de schéma de base de données.
 
 ### Issue T0.2.6 - Créer le fichier app/main.py avec CORS et middleware
 
-**Epic**: Infrastructure  
-**Priority**: 🔴 Critical  
+**Epic**: Infrastructure
+**Priority**: 🔴 Critical
 **Effort**: 2h
 
 **Description**:
@@ -340,8 +340,8 @@ Créer le fichier principal FastAPI avec configuration de base.
 
 ### Issue T0.2.7 - Configurer logging JSON structuré avec correlation_id
 
-**Epic**: Infrastructure  
-**Priority**: 🟡 Important  
+**Epic**: Infrastructure
+**Priority**: 🟡 Important
 **Effort**: 1.5h
 
 **Description**:
@@ -365,8 +365,8 @@ Configurer la journalisation JSON structurée avec correlation_id pour tracer le
 
 ### Issue T0.3.1 - Initialiser projet Next.js 14+ avec App Router et TypeScript strict
 
-**Epic**: Infrastructure  
-**Priority**: 🔴 Critical  
+**Epic**: Infrastructure
+**Priority**: 🔴 Critical
 **Effort**: 1.5h
 
 **Description**:
@@ -393,8 +393,8 @@ Initialiser le projet frontend Next.js 14+ avec App Router et TypeScript strict 
 
 ### Issue T0.3.2 - Configurer TailwindCSS et Shadcn/ui
 
-**Epic**: Infrastructure  
-**Priority**: 🔴 Critical  
+**Epic**: Infrastructure
+**Priority**: 🔴 Critical
 **Effort**: 1h
 
 **Description**:
@@ -424,8 +424,8 @@ Configurer TailwindCSS et installer les composants Shadcn/ui.
 
 ### Issue T0.3.3 - Créer structure dossiers frontend
 
-**Epic**: Infrastructure  
-**Priority**: 🔴 Critical  
+**Epic**: Infrastructure
+**Priority**: 🔴 Critical
 **Effort**: 1.5h
 
 **Description**:
@@ -476,8 +476,8 @@ frontend/src/
 
 ### Issue T0.3.4 - Configurer TanStack Query provider
 
-**Epic**: Infrastructure  
-**Priority**: 🔴 Critical  
+**Epic**: Infrastructure
+**Priority**: 🔴 Critical
 **Effort**: 1h
 
 **Description**:
@@ -501,8 +501,8 @@ Installer et configurer TanStack Query (React Query v5) pour la gestion du state
 
 ### Issue T0.3.5 - Configurer Zustand store de base
 
-**Epic**: Infrastructure  
-**Priority**: 🔴 Critical  
+**Epic**: Infrastructure
+**Priority**: 🔴 Critical
 **Effort**: 1h
 
 **Description**:
@@ -524,8 +524,8 @@ Configurer Zustand pour la gestion du state client (authentification, UI).
 
 ### Issue T0.3.6 - Créer client API avec fetch wrapper et gestion erreurs
 
-**Epic**: Infrastructure  
-**Priority**: 🔴 Critical  
+**Epic**: Infrastructure
+**Priority**: 🔴 Critical
 **Effort**: 2h
 
 **Description**:
@@ -551,8 +551,8 @@ Créer un client API wrapper pour les appels HTTP avec gestion d'erreurs et inte
 
 ### Issue T0.3.7 - Configurer next-intl pour i18n (fr par défaut)
 
-**Epic**: Infrastructure  
-**Priority**: 🟡 Important  
+**Epic**: Infrastructure
+**Priority**: 🟡 Important
 **Effort**: 1h
 
 **Description**:
@@ -576,8 +576,8 @@ Configurer next-intl pour la gestion des traductions multilingues (français par
 
 ### Issue T0.4.1 - Créer modèle Organization avec SQLAlchemy
 
-**Epic**: Infrastructure  
-**Priority**: 🔴 Critical  
+**Epic**: Infrastructure
+**Priority**: 🔴 Critical
 **Effort**: 1.5h
 
 **Description**:
@@ -610,8 +610,8 @@ Créer le modèle SQLAlchemy pour Organization (tenant principal).
 
 ### Issue T0.4.2 - Créer modèle User avec SQLAlchemy
 
-**Epic**: Infrastructure  
-**Priority**: 🔴 Critical  
+**Epic**: Infrastructure
+**Priority**: 🔴 Critical
 **Effort**: 2h
 
 **Description**:
@@ -650,8 +650,8 @@ Créer le modèle User avec champs d'authentification et profil.
 
 ### Issue T0.4.3 - Créer modèle RefreshToken
 
-**Epic**: Infrastructure  
-**Priority**: 🔴 Critical  
+**Epic**: Infrastructure
+**Priority**: 🔴 Critical
 **Effort**: 1h
 
 **Description**:
@@ -680,8 +680,8 @@ Créer le modèle pour gérer les refresh tokens.
 
 ### Issue T0.4.4 - Générer migration initiale Alembic
 
-**Epic**: Infrastructure  
-**Priority**: 🔴 Critical  
+**Epic**: Infrastructure
+**Priority**: 🔴 Critical
 **Effort**: 1h
 
 **Description**:
@@ -705,8 +705,8 @@ Générer la première migration Alembic avec les modèles Organization, User, R
 
 ### Issue T0.4.5 - Créer script de seed pour données de test
 
-**Epic**: Infrastructure  
-**Priority**: 🟡 Important  
+**Epic**: Infrastructure
+**Priority**: 🟡 Important
 **Effort**: 1.5h
 
 **Description**:
@@ -732,8 +732,8 @@ Créer un script pour peupler la DB avec données de test.
 
 ### Issue T0.4.6 - Tester la connexion DB et migrations
 
-**Epic**: Infrastructure  
-**Priority**: 🔴 Critical  
+**Epic**: Infrastructure
+**Priority**: 🔴 Critical
 **Effort**: 1h
 
 **Description**:
@@ -757,8 +757,8 @@ Vérifier que la connexion DB et les migrations fonctionnent correctement.
 
 ### Issue T0.5.1 - Créer workflow GitHub Actions pour tests backend
 
-**Epic**: Infrastructure  
-**Priority**: 🟡 Important  
+**Epic**: Infrastructure
+**Priority**: 🟡 Important
 **Effort**: 2h
 
 **Description**:
@@ -786,8 +786,8 @@ Créer un workflow GitHub Actions qui exécute les tests backend sur chaque push
 
 ### Issue T0.5.2 - Créer workflow GitHub Actions pour tests frontend
 
-**Epic**: Infrastructure  
-**Priority**: 🟡 Important  
+**Epic**: Infrastructure
+**Priority**: 🟡 Important
 **Effort**: 2h
 
 **Description**:
@@ -817,8 +817,8 @@ Créer un workflow GitHub Actions pour tester le frontend.
 
 ### Issue T0.5.3 - Configurer coverage reports (Codecov ou similaire)
 
-**Epic**: Infrastructure  
-**Priority**: 🟡 Important  
+**Epic**: Infrastructure
+**Priority**: 🟡 Important
 **Effort**: 1.5h
 
 **Description**:
@@ -843,8 +843,8 @@ Configurer Codecov (ou similaire) pour tracker la couverture de tests.
 
 ### Issue T0.5.4 - Créer workflow de lint sur chaque PR
 
-**Epic**: Infrastructure  
-**Priority**: 🟡 Important  
+**Epic**: Infrastructure
+**Priority**: 🟡 Important
 **Effort**: 1.5h
 
 **Description**:
@@ -866,8 +866,8 @@ Créer un workflow GitHub Actions pour vérifier la qualité du code.
 
 ### Issue T0.5.5 - Documenter le workflow de déploiement
 
-**Epic**: Infrastructure  
-**Priority**: 🟢 Nice-to-have  
+**Epic**: Infrastructure
+**Priority**: 🟢 Nice-to-have
 **Effort**: 1.5h
 
 **Description**:

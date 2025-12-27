@@ -1,7 +1,7 @@
 # Specification Quality Checklist: Church Team Management SaaS
 
-**Purpose**: Validate specification completeness and quality before proceeding to planning  
-**Created**: 2025-12-27  
+**Purpose**: Validate specification completeness and quality before proceeding to planning
+**Created**: 2025-12-27
 **Feature**: [spec.md](spec.md)
 
 ## Content Quality
