@@ -121,7 +121,7 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
 - [x] **T1.1.4** Créer `app/services/auth_service.py`:
   - `register()`, `login()`, `refresh_token()`, `logout()`
   - `forgot_password()`, `reset_password()`
-- [ ] **T1.1.5** Créer `app/api/v1/routes/auth.py`:
+- [x] **T1.1.5** Créer `app/api/v1/routes/auth.py`:
   - POST `/auth/register`
   - POST `/auth/login`
   - POST `/auth/refresh`
