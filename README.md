@@ -50,7 +50,7 @@ mon-service/
 
 ### Backend
 
-- **Python 3.11+** avec type hints stricts
+- **Python 3.13** avec type hints stricts
 - **FastAPI** - Framework web async
 - **SQLAlchemy 2.0** - ORM async
 - **Pydantic v2** - Validation des données
@@ -73,7 +73,7 @@ mon-service/
 ### Prérequis
 
 - Node.js 20+ (LTS)
-- Python 3.11+
+- Python 3.13
 - Docker & Docker Compose
 - pnpm 9+
 - uv (ou pip)
