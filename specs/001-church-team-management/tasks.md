@@ -118,7 +118,7 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
   - `TokenPayload`, `RefreshTokenRequest`
 - [x] **T1.1.3** Créer `app/repositories/user_repository.py`:
   - `create()`, `get_by_email()`, `get_by_id()`, `update()`
-- [ ] **T1.1.4** Créer `app/services/auth_service.py`:
+- [x] **T1.1.4** Créer `app/services/auth_service.py`:
   - `register()`, `login()`, `refresh_token()`, `logout()`
   - `forgot_password()`, `reset_password()`
 - [ ] **T1.1.5** Créer `app/api/v1/routes/auth.py`:
