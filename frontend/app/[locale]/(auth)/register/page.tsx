@@ -9,11 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
-import { ROUTES } from "@/lib/constants";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 export default function RegisterPage() {
+  const t = useTranslations("Auth");
+  const tCommon = useTranslations("Common");
   const { register, isLoading } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
@@ -28,27 +30,27 @@ export default function RegisterPage() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.firstName) {
-      newErrors.firstName = "Le prénom est requis";
+      newErrors.firstName = t("emailRequired");
     }
 
     if (!formData.lastName) {
-      newErrors.lastName = "Le nom est requis";
+      newErrors.lastName = t("emailRequired");
     }
 
     if (!formData.email) {
-      newErrors.email = "L'email est requis";
+      newErrors.email = t("emailRequired");
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email invalide";
+      newErrors.email = t("invalidEmail");
     }
 
     if (!formData.password) {
-      newErrors.password = "Le mot de passe est requis";
+      newErrors.password = t("passwordRequired");
     } else if (formData.password.length < 8) {
-      newErrors.password = "Le mot de passe doit contenir au moins 8 caractères";
+      newErrors.password = t("passwordMin");
     }
 
     if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Les mots de passe ne correspondent pas";
+      newErrors.confirmPassword = t("passwordMismatch");
     }
 
     setErrors(newErrors);
@@ -93,16 +95,14 @@ export default function RegisterPage() {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Créer un compte</h2>
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-          Inscrivez-vous pour commencer
-        </p>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t("registerTitle")}</h2>
+        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{t("registerDescription")}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="firstName">Prénom</Label>
+            <Label htmlFor="firstName">{t("firstName")}</Label>
             <Input
               id="firstName"
               name="firstName"
@@ -117,7 +117,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="lastName">Nom</Label>
+            <Label htmlFor="lastName">{t("lastName")}</Label>
             <Input
               id="lastName"
               name="lastName"
@@ -133,7 +133,7 @@ export default function RegisterPage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t("email")}</Label>
           <Input
             id="email"
             name="email"
@@ -148,7 +148,7 @@ export default function RegisterPage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="password">Mot de passe</Label>
+          <Label htmlFor="password">{t("password")}</Label>
           <Input
             id="password"
             name="password"
@@ -163,7 +163,7 @@ export default function RegisterPage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+          <Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
           <Input
             id="confirmPassword"
             name="confirmPassword"
@@ -180,7 +180,7 @@ export default function RegisterPage() {
         </div>
 
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Inscription..." : "S'inscrire"}
+          {isLoading ? tCommon("loading") : t("register")}
         </Button>
       </form>
 
@@ -212,16 +212,16 @@ export default function RegisterPage() {
             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
           />
         </svg>
-        Google
+        {t("registerWithGoogle")}
       </Button>
 
       <div className="text-center text-sm">
-        <span className="text-gray-600 dark:text-gray-400">Vous avez déjà un compte ? </span>
+        <span className="text-gray-600 dark:text-gray-400">{t("hasAccount")} </span>
         <Link
-          href={ROUTES.LOGIN}
+          href="/login"
           className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
         >
-          Se connecter
+          {t("login")}
         </Link>
       </div>
     </div>

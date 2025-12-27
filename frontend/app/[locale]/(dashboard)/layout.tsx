@@ -5,9 +5,9 @@
 
 "use client";
 
-import { ROUTES } from "@/lib/constants";
+import { useRouter } from "@/i18n/navigation";
 import { useAuthStore } from "@/stores/auth";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { ReactNode, useEffect } from "react";
 
 interface DashboardLayoutProps {
@@ -15,13 +15,15 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
+  const t = useTranslations("Common");
+  const tNav = useTranslations("Navigation");
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuthStore();
 
   // Protect dashboard routes
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.push(ROUTES.LOGIN);
+      router.push("/login");
     }
   }, [isAuthenticated, isLoading, router]);
 
@@ -31,7 +33,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <div className="border-primary mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2"></div>
-          <p className="text-gray-600 dark:text-gray-400">Chargement...</p>
+          <p className="text-gray-600 dark:text-gray-400">{t("loading")}</p>
         </div>
       </div>
     );
@@ -56,11 +58,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
             <nav className="flex items-center space-x-4">
               <button className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-                <span className="sr-only">Notifications</span>
+                <span className="sr-only">{tNav("notifications")}</span>
                 🔔
               </button>
               <button className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-                <span className="sr-only">Profil</span>
+                <span className="sr-only">{tNav("profile")}</span>
                 👤
               </button>
             </nav>

@@ -1,22 +1,11 @@
-import { ApiProvider } from "@/components/providers/api-provider";
-import { QueryProvider } from "@/components/providers/query-provider";
-import { Toaster } from "@/components/ui/sonner";
+/**
+ * Root Layout
+ * This layout handles the basic HTML structure.
+ * The actual providers are in the [locale] layout.
+ */
+
 import type { Metadata } from "next";
-import { ThemeProvider } from "next-themes";
-import { Geist, Geist_Mono, Noto_Sans } from "next/font/google";
 import "./globals.css";
-
-const notoSans = Noto_Sans({ variable: "--font-sans", subsets: ["latin"] });
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Church Team Management",
@@ -28,18 +17,5 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html lang="fr" suppressHydrationWarning className={notoSans.variable}>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <QueryProvider>
-          <ApiProvider>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-              {children}
-              <Toaster />
-            </ThemeProvider>
-          </ApiProvider>
-        </QueryProvider>
-      </body>
-    </html>
-  );
+  return children;
 }
