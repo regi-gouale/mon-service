@@ -19,6 +19,7 @@ from app.core.security import get_password_hash, verify_password
 
 if TYPE_CHECKING:
     from app.models.organization import Organization
+    from app.models.refresh_token import RefreshToken
 
 
 class UserRole(str, enum.Enum):
@@ -192,12 +193,12 @@ class User(Base):
     )
 
     # Note: refresh_tokens relationship will be added when RefreshToken model is created (T0.4.3)
-    # refresh_tokens: Mapped[list["RefreshToken"]] = relationship(
-    #     "RefreshToken",
-    #     back_populates="user",
-    #     lazy="selectin",
-    #     cascade="all, delete-orphan",
-    # )
+    refresh_tokens: Mapped[list["RefreshToken"]] = relationship(
+        "RefreshToken",
+        back_populates="user",
+        lazy="selectin",
+        cascade="all, delete-orphan",
+    )
 
     # Note: members relationship will be added when Member model is created (T2.1.2)
     # members: Mapped[list["Member"]] = relationship(
