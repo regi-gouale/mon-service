@@ -4,7 +4,7 @@
  */
 
 import { create } from "zustand";
-import { devtools } from "zustand/middleware";
+import { devtools, persist } from "zustand/middleware";
 
 export interface UIState {
   // Sidebar
@@ -44,63 +44,72 @@ export interface UIState {
 
 export const useUIStore = create<UIState>()(
   devtools(
-    (set): Omit<UIState, keyof UIState> & UIState => ({
-      // Initial state
-      isSidebarOpen: true,
-      isSidebarCollapsed: false,
-      activeModal: null,
-      modalData: null,
-      notificationCount: 0,
-      theme: "system",
-      globalLoading: false,
+    persist(
+      (set): Omit<UIState, keyof UIState> & UIState => ({
+        // Initial state
+        isSidebarOpen: true,
+        isSidebarCollapsed: false,
+        activeModal: null,
+        modalData: null,
+        notificationCount: 0,
+        theme: "system",
+        globalLoading: false,
 
-      // Sidebar actions
-      toggleSidebar: () =>
-        set((state) => ({
-          isSidebarOpen: !state.isSidebarOpen,
-        })),
+        // Sidebar actions
+        toggleSidebar: () =>
+          set((state) => ({
+            isSidebarOpen: !state.isSidebarOpen,
+          })),
 
-      setSidebarOpen: (isOpen) => set({ isSidebarOpen: isOpen }),
+        setSidebarOpen: (isOpen) => set({ isSidebarOpen: isOpen }),
 
-      toggleSidebarCollapse: () =>
-        set((state) => ({
-          isSidebarCollapsed: !state.isSidebarCollapsed,
-        })),
+        toggleSidebarCollapse: () =>
+          set((state) => ({
+            isSidebarCollapsed: !state.isSidebarCollapsed,
+          })),
 
-      setSidebarCollapsed: (isCollapsed) => set({ isSidebarCollapsed: isCollapsed }),
+        setSidebarCollapsed: (isCollapsed) => set({ isSidebarCollapsed: isCollapsed }),
 
-      // Modal actions
-      openModal: (modalId, data) =>
-        set({
-          activeModal: modalId,
-          modalData: data,
+        // Modal actions
+        openModal: (modalId, data) =>
+          set({
+            activeModal: modalId,
+            modalData: data,
+          }),
+
+        closeModal: () =>
+          set({
+            activeModal: null,
+            modalData: null,
+          }),
+
+        // Notification actions
+        setNotificationCount: (count) => set({ notificationCount: count }),
+
+        incrementNotificationCount: () =>
+          set((state) => ({
+            notificationCount: state.notificationCount + 1,
+          })),
+
+        decrementNotificationCount: () =>
+          set((state) => ({
+            notificationCount: Math.max(0, state.notificationCount - 1),
+          })),
+
+        // Theme actions
+        setTheme: (theme) => set({ theme }),
+
+        // Loading actions
+        setGlobalLoading: (isLoading) => set({ globalLoading: isLoading }),
+      }),
+      {
+        name: "ui-storage",
+        partialize: (state) => ({
+          theme: state.theme,
+          isSidebarCollapsed: state.isSidebarCollapsed,
         }),
-
-      closeModal: () =>
-        set({
-          activeModal: null,
-          modalData: null,
-        }),
-
-      // Notification actions
-      setNotificationCount: (count) => set({ notificationCount: count }),
-
-      incrementNotificationCount: () =>
-        set((state) => ({
-          notificationCount: state.notificationCount + 1,
-        })),
-
-      decrementNotificationCount: () =>
-        set((state) => ({
-          notificationCount: Math.max(0, state.notificationCount - 1),
-        })),
-
-      // Theme actions
-      setTheme: (theme) => set({ theme }),
-
-      // Loading actions
-      setGlobalLoading: (isLoading) => set({ globalLoading: isLoading }),
-    }),
+      }
+    ),
     { name: "UIStore" }
   )
 );
