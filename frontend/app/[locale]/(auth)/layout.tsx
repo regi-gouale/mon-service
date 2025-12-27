@@ -33,7 +33,7 @@ function AuthLayoutContent({ children }: { children: ReactNode }) {
         <div className="rounded-lg bg-white p-8 shadow-xl dark:bg-gray-800">{children}</div>
 
         <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-          <p>© 2025 Church Team Management. Tous droits réservés.</p>
+          <p>© 2025 Mon Service. Tous droits réservés.</p>
         </div>
       </div>
     </div>

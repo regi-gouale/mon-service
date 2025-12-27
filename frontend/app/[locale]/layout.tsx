@@ -23,8 +23,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Church Team Management",
-  description: "Manage your church department teams, schedules, and services",
+  title: "Mon Service",
+  description: "Gérez vos équipes de service, plannings et disponibilités",
 };
 
 // Generate static params for all supported locales

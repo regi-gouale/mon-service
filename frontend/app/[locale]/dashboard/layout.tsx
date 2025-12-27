@@ -51,9 +51,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center">
-              <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Church Team Management
-              </h1>
+              <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Mon Service</h1>
             </div>
 
             <nav className="flex items-center space-x-4">
@@ -77,7 +75,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <footer className="mt-auto border-t border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
           <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-            © 2025 Church Team Management. Tous droits réservés.
+            © 2025 Mon Service. Tous droits réservés.
           </p>
         </div>
       </footer>
