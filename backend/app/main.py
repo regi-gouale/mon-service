@@ -3,7 +3,7 @@ FastAPI Application Entry Point.
 
 This module contains the main FastAPI application instance with:
 - CORS middleware configuration
-- Logging middleware with correlation ID
+- Structured JSON logging with correlation ID
 - Exception handlers
 - Health check endpoint
 - Startup/shutdown events (lifespan)
@@ -13,10 +13,6 @@ Usage:
     uvicorn app.main:app --reload
 """
 
-import logging
-import sys
-import time
-import uuid
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from typing import Any
@@ -35,41 +31,21 @@ from app.core.exceptions import (
     UnauthorizedError,
     ValidationError,
 )
-
+from app.core.logging import get_logger, setup_logging
+from app.core.middleware import CorrelationIdMiddleware
 
 # =============================================================================
 # Logging Configuration
 # =============================================================================
-def setup_logging() -> logging.Logger:
-    """
-    Configure structured logging for the application.
+# Initialize structured logging
+setup_logging(
+    log_level=settings.log_level,
+    log_format=settings.log_format,
+    service_name=settings.app_name.lower().replace(" ", "-"),
+    environment=settings.app_env,
+)
 
-    Returns:
-        Logger: Configured application logger.
-    """
-    log_level = getattr(logging, settings.log_level, logging.INFO)
-
-    # Configure root logger
-    logging.basicConfig(
-        level=log_level,
-        format=(
-            '{"timestamp": "%(asctime)s", "level": "%(levelname)s", '
-            '"logger": "%(name)s", "message": "%(message)s"}'
-            if settings.log_format == "json"
-            else "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        ),
-        datefmt="%Y-%m-%dT%H:%M:%S%z",
-        stream=sys.stdout,
-        force=True,
-    )
-
-    logger = logging.getLogger("app")
-    logger.setLevel(log_level)
-
-    return logger
-
-
-logger = setup_logging()
+logger = get_logger(__name__)
 
 
 # =============================================================================
@@ -127,13 +103,20 @@ def create_application() -> FastAPI:
         lifespan=lifespan,
     )
 
-    # Configure CORS
+    # Configure CORS (must be added before other middleware)
     application.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
         allow_credentials=settings.cors_allow_credentials,
         allow_methods=settings.cors_allow_methods,
-        allow_headers=settings.cors_allow_headers,
+        allow_headers=[*settings.cors_allow_headers, "X-Correlation-ID"],
+        expose_headers=["X-Correlation-ID"],
+    )
+
+    # Add correlation ID middleware for request tracing
+    application.add_middleware(
+        CorrelationIdMiddleware,
+        exclude_paths=["/health", "/metrics", "/favicon.ico"],
     )
 
     # Register exception handlers
@@ -305,53 +288,6 @@ def register_routes(application: FastAPI) -> None:
 
 
 # =============================================================================
-# Logging Middleware
+# Application Instance
 # =============================================================================
 app = create_application()
-
-
-@app.middleware("http")
-async def logging_middleware(request: Request, call_next: Any) -> Any:
-    """
-    Middleware for request logging with correlation ID.
-
-    Adds a correlation ID to each request for tracing and logs
-    request/response details with timing information.
-    """
-    # Generate or extract correlation ID
-    correlation_id = request.headers.get("X-Correlation-ID", str(uuid.uuid4()))
-    request.state.correlation_id = correlation_id
-
-    # Log request
-    start_time = time.perf_counter()
-    logger.info(
-        f"Request started | method={request.method} | path={request.url.path} | "
-        f"correlation_id={correlation_id}"
-    )
-
-    try:
-        response = await call_next(request)
-
-        # Calculate duration
-        duration_ms = (time.perf_counter() - start_time) * 1000
-
-        # Log response
-        logger.info(
-            f"Request completed | method={request.method} | path={request.url.path} | "
-            f"status={response.status_code} | duration_ms={duration_ms:.2f} | "
-            f"correlation_id={correlation_id}"
-        )
-
-        # Add correlation ID to response headers
-        response.headers["X-Correlation-ID"] = correlation_id
-
-        return response
-
-    except Exception as exc:
-        duration_ms = (time.perf_counter() - start_time) * 1000
-        logger.exception(
-            f"Request failed | method={request.method} | path={request.url.path} | "
-            f"duration_ms={duration_ms:.2f} | correlation_id={correlation_id} | "
-            f"error={exc!s}"
-        )
-        raise
