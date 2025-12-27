@@ -53,7 +53,7 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
   ```
 - [x] **T0.2.3** Configurer `app/core/config.py` avec Pydantic Settings
 - [x] **T0.2.4** Configurer SQLAlchemy 2.0 async avec `app/core/database.py`
-- [ ] **T0.2.5** Configurer Alembic pour les migrations
+- [x] **T0.2.5** Configurer Alembic pour les migrations
 - [ ] **T0.2.6** Créer le fichier `app/main.py` avec CORS et middleware
 - [ ] **T0.2.7** Configurer logging JSON structuré avec correlation_id
 
