@@ -210,7 +210,8 @@ class TestRegisterRequest:
             RegisterRequest(**data)
 
         errors = exc_info.value.errors()
-        assert any(e["loc"] == ("last_name",) for e in errors)
+        # Pydantic uses the alias in error location when field is missing
+        assert any(e["loc"] == ("lastName",) for e in errors)
 
 
 class TestLoginRequest:
