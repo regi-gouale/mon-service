@@ -23,15 +23,15 @@ if TYPE_CHECKING:
 # Load test environment variables BEFORE importing app modules
 _env_test_path = Path(__file__).parent.parent / ".env.test"
 if _env_test_path.exists():
-    load_dotenv(_env_test_path, override=True)
-else:
-    # Fallback: set minimal required env vars for testing
-    os.environ.setdefault(
-        "SECRET_KEY", "test-secret-key-for-testing-purposes-only-min-32-chars"
-    )
-    os.environ.setdefault(
-        "DATABASE_URL", "postgresql+asyncpg://test:test@localhost:5432/test_db"
-    )
+    load_dotenv(_env_test_path, override=False)  # Don't override CI env vars
+
+# Set minimal required env vars for testing (only if not already set)
+os.environ.setdefault(
+    "SECRET_KEY", "test-secret-key-for-testing-purposes-only-min-32-chars"
+)
+os.environ.setdefault(
+    "DATABASE_URL", "postgresql+asyncpg://postgres:postgres@localhost:5432/test_db"
+)
 
 from app.core.database import Base, get_db  # noqa: E402
 
