@@ -32,7 +32,7 @@ Ce document contient toutes les tâches d'implémentation dérivées des 10 user
 ### T0.1 - Configuration du monorepo ⏱️ 4h 🔴
 
 - [x] **T0.1.1** Initialiser le repository avec structure `backend/` et `frontend/`
-- [ ] **T0.1.2** Créer `docker-compose.yml` avec PostgreSQL, Redis, MailHog, MinIO
+- [x] **T0.1.2** Créer `docker-compose.yml` avec PostgreSQL, Redis, MailHog, MinIO
 - [ ] **T0.1.3** Configurer les fichiers `.env.example` pour backend et frontend
 - [ ] **T0.1.4** Créer le `Makefile` racine avec commandes unifiées
 - [ ] **T0.1.5** Configurer pre-commit hooks (ruff, eslint, prettier, commitlint)
