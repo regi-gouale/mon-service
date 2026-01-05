@@ -23,6 +23,13 @@ import {
   useMyAvailabilities,
   useUpdateMyAvailabilities,
 } from "@/hooks/useQuery";
+import {
+  getMockAvailabilityDeadline,
+  getMockMyAvailabilities,
+  mockDepartments,
+  simulateDelay,
+  type MockDepartment,
+} from "@/lib/mock-data";
 import type { AvailabilityDeadlineResponse, Department, MemberAvailabilityResponse } from "@/types";
 import { IconDeviceFloppy, IconLoader2 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
@@ -77,22 +84,42 @@ function getNextMonth(current: MonthYear): MonthYear {
 // Component
 // ============================================================================
 
+// Check if we're in mock mode
+const isMockMode = process.env.NEXT_PUBLIC_MOCK_API === "true";
+
 export default function AvailabilityPage() {
   const t = useTranslations("Availability");
   const tCommon = useTranslations("Common");
 
-  // Fetch departments list
+  // Mock mode state
+  const [mockLoading, setMockLoading] = useState(isMockMode);
+  const [mockSaving, setMockSaving] = useState(false);
+
+  // Initialize mock loading
+  useEffect(() => {
+    if (isMockMode) {
+      simulateDelay(500).then(() => setMockLoading(false));
+    }
+  }, []);
+
+  // Fetch departments list (real API)
   const {
     data: departmentsData,
-    isLoading: isLoadingDepartments,
-    isError: isDepartmentsError,
-  } = useDepartments();
+    isLoading: isLoadingDepartmentsApi,
+    isError: isDepartmentsErrorApi,
+  } = useDepartments({ enabled: !isMockMode });
+
+  // Use mock or real data
+  const isLoadingDepartments = isMockMode ? mockLoading : isLoadingDepartmentsApi;
+  const isDepartmentsError = isMockMode ? false : isDepartmentsErrorApi;
 
   // Type-safe departments accessor with useMemo to prevent re-renders
-  const departments = useMemo(
-    () => (departmentsData as Department[] | undefined) ?? [],
-    [departmentsData]
-  );
+  const departments = useMemo(() => {
+    if (isMockMode) {
+      return mockDepartments as unknown as (Department | MockDepartment)[];
+    }
+    return (departmentsData as Department[] | undefined) ?? [];
+  }, [departmentsData]);
 
   // Selected department
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<string | null>(null);
@@ -113,29 +140,53 @@ export default function AvailabilityPage() {
   // Track if there are unsaved changes
   const [hasChanges, setHasChanges] = useState(false);
 
-  // Fetch current availabilities (only when department is selected)
+  // Fetch current availabilities (only when department is selected) - real API
   const {
-    data: availabilityData,
-    isLoading: isLoadingAvailabilities,
-    isError: isAvailabilityError,
+    data: availabilityDataApi,
+    isLoading: isLoadingAvailabilitiesApi,
+    isError: isAvailabilityErrorApi,
   } = useMyAvailabilities(selectedDepartmentId ?? "", currentMonth.year, currentMonth.month, {
-    enabled: !!selectedDepartmentId,
+    enabled: !!selectedDepartmentId && !isMockMode,
   });
 
-  // Fetch deadline info (only when department is selected)
-  const { data: deadlineData, isLoading: isLoadingDeadline } = useAvailabilityDeadline(
+  // Fetch deadline info (only when department is selected) - real API
+  const { data: deadlineDataApi, isLoading: isLoadingDeadlineApi } = useAvailabilityDeadline(
     selectedDepartmentId ?? "",
     currentMonth.year,
     currentMonth.month,
-    { enabled: !!selectedDepartmentId }
+    { enabled: !!selectedDepartmentId && !isMockMode }
   );
 
   // Mutation for saving availabilities
   const updateMutation = useUpdateMyAvailabilities(selectedDepartmentId ?? "");
 
+  // Get mock data when in mock mode
+  const mockAvailabilityData = useMemo(() => {
+    if (isMockMode && selectedDepartmentId) {
+      return getMockMyAvailabilities(selectedDepartmentId, currentMonth.year, currentMonth.month);
+    }
+    return null;
+  }, [selectedDepartmentId, currentMonth.year, currentMonth.month]);
+
+  const mockDeadlineData = useMemo(() => {
+    if (isMockMode) {
+      return getMockAvailabilityDeadline(currentMonth.year, currentMonth.month);
+    }
+    return null;
+  }, [currentMonth.year, currentMonth.month]);
+
+  // Use mock or real data
+  const isLoadingAvailabilities = isMockMode ? mockLoading : isLoadingAvailabilitiesApi;
+  const isLoadingDeadline = isMockMode ? mockLoading : isLoadingDeadlineApi;
+  const isAvailabilityError = isMockMode ? false : isAvailabilityErrorApi;
+
   // Type-safe accessors
-  const typedAvailabilityData = availabilityData as MemberAvailabilityResponse | undefined;
-  const typedDeadlineData = deadlineData as AvailabilityDeadlineResponse | undefined;
+  const typedAvailabilityData = isMockMode
+    ? (mockAvailabilityData as unknown as MemberAvailabilityResponse)
+    : (availabilityDataApi as MemberAvailabilityResponse | undefined);
+  const typedDeadlineData = isMockMode
+    ? (mockDeadlineData as unknown as AvailabilityDeadlineResponse)
+    : (deadlineDataApi as AvailabilityDeadlineResponse | undefined);
 
   // Initialize selected dates from fetched data
   useEffect(() => {
@@ -185,6 +236,16 @@ export default function AvailabilityPage() {
         reason: undefined,
       }));
 
+    // Mock mode: simulate save
+    if (isMockMode) {
+      setMockSaving(true);
+      await simulateDelay(800);
+      setMockSaving(false);
+      toast.success(t("savedSuccess"));
+      setHasChanges(false);
+      return;
+    }
+
     try {
       await updateMutation.mutateAsync({
         year: currentMonth.year,
@@ -197,6 +258,9 @@ export default function AvailabilityPage() {
       // Error is handled by the mutation hook
     }
   }, [selectedDates, currentMonth, updateMutation, t, selectedDepartmentId]);
+
+  // Saving state
+  const isSaving = isMockMode ? mockSaving : updateMutation.isPending;
 
   // Deadline info
   const isDeadlinePassed = typedDeadlineData?.isPassed ?? false;
@@ -280,12 +344,10 @@ export default function AvailabilityPage() {
         {/* Save Button */}
         <Button
           onClick={handleSave}
-          disabled={
-            !hasChanges || isDeadlinePassed || updateMutation.isPending || !selectedDepartmentId
-          }
+          disabled={!hasChanges || isDeadlinePassed || isSaving || !selectedDepartmentId}
         >
           <IconDeviceFloppy className="mr-2 size-4" />
-          {updateMutation.isPending ? tCommon("loading") : tCommon("save")}
+          {isSaving ? tCommon("loading") : tCommon("save")}
         </Button>
       </div>
 
@@ -346,7 +408,7 @@ export default function AvailabilityPage() {
             isDeadlinePassed={isDeadlinePassed}
             deadlineDate={deadlineDateFormatted}
             isLoading={isLoading}
-            isSaving={updateMutation.isPending}
+            isSaving={isSaving}
           />
         </CardContent>
       </Card>

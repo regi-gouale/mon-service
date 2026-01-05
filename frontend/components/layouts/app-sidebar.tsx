@@ -71,6 +71,11 @@ export function AppSidebar() {
       url: "/dashboard/teams",
       icon: IconUsers,
     },
+    {
+      title: t("services"),
+      url: "/dashboard/services",
+      icon: IconClipboardList,
+    },
   ];
 
   // Secondary navigation items
@@ -79,11 +84,6 @@ export function AppSidebar() {
       title: t("notifications"),
       url: "/dashboard/notifications",
       icon: IconBell,
-    },
-    {
-      title: t("tasks"),
-      url: "/dashboard/tasks",
-      icon: IconClipboardList,
     },
     {
       title: t("settings"),

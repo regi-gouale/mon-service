@@ -34,7 +34,8 @@
     "logout": "Logout",
     "navigation": "Navigation",
     "more": "More",
-    "tasks": "Tasks"
+    "tasks": "Tasks",
+    "services": "Services"
   },
   "Auth": {
     "login": "Login",
@@ -133,6 +134,24 @@
     "removeMember": "Remove member",
     "removeConfirm": "Are you sure you want to remove this member?"
   },
+  "Profile": {
+    "title": "My Profile",
+    "description": "Manage your personal information and preferences",
+    "personalInfo": "Personal Information",
+    "personalInfoDescription": "Update your profile information",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "bio": "Bio",
+    "bioPlaceholder": "Tell us a bit about yourself...",
+    "changePassword": "Change Password",
+    "changePasswordDescription": "Update your login password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm New Password",
+    "updatePassword": "Update Password"
+  },
   "Notifications": {
     "title": "Notifications",
     "markAsRead": "Mark as read",
@@ -141,7 +160,12 @@
     "newAssignment": "New assignment",
     "planningPublished": "Planning published",
     "reminder": "Reminder",
-    "serviceReminder": "Service reminder for tomorrow"
+    "serviceReminder": "Service reminder for tomorrow",
+    "recentNotifications": "Recent notifications",
+    "allRead": "All notifications are read",
+    "markedAsRead": "Notification marked as read",
+    "allMarkedAsRead": "All notifications marked as read",
+    "notificationDeleted": "Notification deleted"
   },
   "Settings": {
     "title": "Settings",

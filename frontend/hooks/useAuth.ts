@@ -1,6 +1,7 @@
 /**
  * useAuth Hook
  * Authentication logic and API calls
+ * Automatically uses mock data when NEXT_PUBLIC_MOCK_API=true
  */
 
 import { apiClient } from "@/lib/api";
@@ -9,6 +10,7 @@ import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect } from "react";
 import { toast } from "sonner";
+import { isMockMode, useMockAuth } from "./useMockAuth";
 
 interface LoginCredentials {
   email: string;
@@ -41,6 +43,8 @@ interface AuthResponse {
 }
 
 export function useAuth() {
+  // Always call all hooks first (React rules of hooks)
+  const mockAuth = useMockAuth();
   const router = useRouter();
   const {
     user,
@@ -259,6 +263,11 @@ export function useAuth() {
 
     return () => clearInterval(refreshInterval);
   }, [isAuthenticated, refreshToken]);
+
+  // Return mock auth in development when NEXT_PUBLIC_MOCK_API=true
+  if (isMockMode) {
+    return mockAuth;
+  }
 
   return {
     user,

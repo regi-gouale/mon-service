@@ -2,18 +2,20 @@
  * AvailabilityCalendar Component
  *
  * A month-view calendar that allows users to select multiple dates
- * for marking their unavailability. Supports:
+ * for marking their unavailability. Uses shadcn Calendar component.
+ * Supports:
  * - Multiple date selection
+ * - Week number display
  * - Past dates marked as non-selectable
  * - Deadline indication
- * - Keyboard navigation
  */
 
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-import { IconCalendarOff, IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
+import { IconCalendarOff } from "@tabler/icons-react";
+import { fr } from "date-fns/locale";
 import { useTranslations } from "next-intl";
 import { useCallback, useMemo } from "react";
 
@@ -46,36 +48,9 @@ export interface AvailabilityCalendarProps {
   className?: string;
 }
 
-interface DayInfo {
-  date: Date;
-  dayOfMonth: number;
-  dateString: string;
-  isCurrentMonth: boolean;
-  isPast: boolean;
-  isToday: boolean;
-  isSelected: boolean;
-  isDisabled: boolean;
-}
-
 // ============================================================================
 // Helpers
 // ============================================================================
-
-const DAYS_OF_WEEK = ["L", "M", "M", "J", "V", "S", "D"] as const;
-
-/**
- * Get the first day of the month
- */
-function getFirstDayOfMonth(year: number, month: number): Date {
-  return new Date(year, month - 1, 1);
-}
-
-/**
- * Get the last day of the month
- */
-function getLastDayOfMonth(year: number, month: number): Date {
-  return new Date(year, month, 0);
-}
 
 /**
  * Format date to ISO string (YYYY-MM-DD)
@@ -88,35 +63,11 @@ function formatDateISO(date: Date): string {
 }
 
 /**
- * Check if two dates are the same day
+ * Parse ISO date string to Date object
  */
-function isSameDay(date1: Date, date2: Date): boolean {
-  return (
-    date1.getFullYear() === date2.getFullYear() &&
-    date1.getMonth() === date2.getMonth() &&
-    date1.getDate() === date2.getDate()
-  );
-}
-
-/**
- * Get month name in French
- */
-function getMonthName(month: number): string {
-  const months = [
-    "Janvier",
-    "Février",
-    "Mars",
-    "Avril",
-    "Mai",
-    "Juin",
-    "Juillet",
-    "Août",
-    "Septembre",
-    "Octobre",
-    "Novembre",
-    "Décembre",
-  ];
-  return months[month - 1] || "";
+function parseDateISO(dateString: string): Date {
+  const [year, month, day] = dateString.split("-").map(Number);
+  return new Date(year, month - 1, day);
 }
 
 // ============================================================================
@@ -137,103 +88,50 @@ export function AvailabilityCalendar({
   className,
 }: AvailabilityCalendarProps) {
   const t = useTranslations("Availability");
-  const tCommon = useTranslations("Common");
   const today = useMemo(() => new Date(), []);
 
-  // Generate calendar days for the current month view
-  const calendarDays = useMemo((): DayInfo[] => {
-    const days: DayInfo[] = [];
-    const firstDay = getFirstDayOfMonth(year, month);
-    const lastDay = getLastDayOfMonth(year, month);
+  // Convert Set<string> to Date[] for the Calendar component
+  const selectedDatesArray = useMemo(() => {
+    return Array.from(selectedDates).map(parseDateISO);
+  }, [selectedDates]);
 
-    // Get day of week for first day (0 = Sunday, adjust to Monday = 0)
-    let startDayOfWeek = firstDay.getDay();
-    startDayOfWeek = startDayOfWeek === 0 ? 6 : startDayOfWeek - 1;
+  // Current displayed month as Date
+  const displayedMonth = useMemo(() => {
+    return new Date(year, month - 1, 1);
+  }, [year, month]);
 
-    // Add days from previous month to fill the first week
-    const prevMonthLastDay = new Date(year, month - 1, 0);
-    for (let i = startDayOfWeek - 1; i >= 0; i--) {
-      const date = new Date(year, month - 2, prevMonthLastDay.getDate() - i);
-      const dateString = formatDateISO(date);
-      days.push({
-        date,
-        dayOfMonth: date.getDate(),
-        dateString,
-        isCurrentMonth: false,
-        isPast: date < today && !isSameDay(date, today),
-        isToday: isSameDay(date, today),
-        isSelected: selectedDates.has(dateString),
-        isDisabled: true, // Previous month days are always disabled
-      });
-    }
-
-    // Add current month days
-    for (let day = 1; day <= lastDay.getDate(); day++) {
-      const date = new Date(year, month - 1, day);
-      const dateString = formatDateISO(date);
-      const isPast = date < today && !isSameDay(date, today);
-      days.push({
-        date,
-        dayOfMonth: day,
-        dateString,
-        isCurrentMonth: true,
-        isPast,
-        isToday: isSameDay(date, today),
-        isSelected: selectedDates.has(dateString),
-        isDisabled: isPast || isDeadlinePassed,
-      });
-    }
-
-    // Add days from next month to complete the grid (6 rows x 7 days = 42)
-    const remainingDays = 42 - days.length;
-    for (let day = 1; day <= remainingDays; day++) {
-      const date = new Date(year, month, day);
-      const dateString = formatDateISO(date);
-      days.push({
-        date,
-        dayOfMonth: day,
-        dateString,
-        isCurrentMonth: false,
-        isPast: false,
-        isToday: isSameDay(date, today),
-        isSelected: selectedDates.has(dateString),
-        isDisabled: true, // Next month days are always disabled
-      });
-    }
-
-    return days;
-  }, [year, month, selectedDates, today, isDeadlinePassed]);
-
-  // Handle day click
-  const handleDayClick = useCallback(
-    (day: DayInfo) => {
-      if (day.isDisabled || !day.isCurrentMonth) return;
-
-      const newDates = new Set(selectedDates);
-      if (newDates.has(day.dateString)) {
-        newDates.delete(day.dateString);
-      } else {
-        newDates.add(day.dateString);
+  // Handle date selection
+  const handleSelect = useCallback(
+    (dates: Date[] | undefined) => {
+      if (!dates) {
+        onDatesChange(new Set());
+        return;
       }
+      const newDates = new Set(dates.map(formatDateISO));
       onDatesChange(newDates);
     },
-    [selectedDates, onDatesChange]
+    [onDatesChange]
   );
 
-  // Handle keyboard navigation
-  const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent, day: DayInfo) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        handleDayClick(day);
+  // Handle month change from Calendar navigation
+  const handleMonthChange = useCallback(
+    (newMonth: Date) => {
+      const newYear = newMonth.getFullYear();
+      const newMonthNum = newMonth.getMonth() + 1;
+      const currentYear = year;
+      const currentMonth = month;
+
+      if (newYear < currentYear || (newYear === currentYear && newMonthNum < currentMonth)) {
+        onPreviousMonth();
+      } else if (newYear > currentYear || (newYear === currentYear && newMonthNum > currentMonth)) {
+        onNextMonth();
       }
     },
-    [handleDayClick]
+    [year, month, onPreviousMonth, onNextMonth]
   );
 
-  // Selected count
+  // Selected count for current month only
   const selectedCount = useMemo(() => {
-    // Count only dates from current month
     let count = 0;
     selectedDates.forEach((dateStr) => {
       const [y, m] = dateStr.split("-").map(Number);
@@ -244,35 +142,42 @@ export function AvailabilityCalendar({
     return count;
   }, [selectedDates, year, month]);
 
+  // Handle week number click - select/deselect all days in the week
+  const handleWeekNumberClick = useCallback(
+    (_weekNumber: number, weekDates: Date[]) => {
+      if (isDeadlinePassed) return;
+
+      // Filter to only selectable days (current month and not past)
+      const selectableDates = weekDates.filter((date) => {
+        const isPast = date < today && date.toDateString() !== today.toDateString();
+        const isCurrentMonth = date.getMonth() + 1 === month && date.getFullYear() === year;
+        return isCurrentMonth && !isPast;
+      });
+
+      if (selectableDates.length === 0) return;
+
+      const selectableDateStrings = selectableDates.map(formatDateISO);
+      const allSelected = selectableDateStrings.every((dateStr) => selectedDates.has(dateStr));
+
+      const newDates = new Set(selectedDates);
+      if (allSelected) {
+        // Deselect all days in the week
+        selectableDateStrings.forEach((dateStr) => {
+          newDates.delete(dateStr);
+        });
+      } else {
+        // Select all days in the week
+        selectableDateStrings.forEach((dateStr) => {
+          newDates.add(dateStr);
+        });
+      }
+      onDatesChange(newDates);
+    },
+    [selectedDates, onDatesChange, today, month, year, isDeadlinePassed]
+  );
+
   return (
     <div className={cn("flex flex-col gap-4", className)}>
-      {/* Header with month navigation */}
-      <div className="flex items-center justify-between">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onPreviousMonth}
-          disabled={isLoading || isSaving}
-          aria-label={tCommon("previous")}
-        >
-          <IconChevronLeft className="size-5" />
-        </Button>
-
-        <h2 className="text-lg font-semibold">
-          {getMonthName(month)} {year}
-        </h2>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onNextMonth}
-          disabled={isLoading || isSaving}
-          aria-label={tCommon("next")}
-        >
-          <IconChevronRight className="size-5" />
-        </Button>
-      </div>
-
       {/* Deadline warning */}
       {isDeadlinePassed && (
         <div className="flex items-center gap-2 rounded-lg bg-amber-100 px-4 py-2 text-amber-800 dark:bg-amber-900/30 dark:text-amber-200">
@@ -288,62 +193,30 @@ export function AvailabilityCalendar({
         </div>
       )}
 
-      {/* Calendar grid */}
-      <div className="overflow-hidden rounded-lg border">
-        {/* Day headers */}
-        <div className="bg-muted grid grid-cols-7 border-b">
-          {DAYS_OF_WEEK.map((day, index) => (
-            <div key={index} className="text-muted-foreground py-2 text-center text-sm font-medium">
-              {day}
-            </div>
-          ))}
+      {/* Calendar using shadcn Calendar component */}
+      {isLoading ? (
+        <div className="flex h-64 items-center justify-center rounded-lg border">
+          <div className="border-primary h-8 w-8 animate-spin rounded-full border-b-2" />
         </div>
-
-        {/* Calendar days */}
-        {isLoading ? (
-          <div className="flex h-64 items-center justify-center">
-            <div className="border-primary h-8 w-8 animate-spin rounded-full border-b-2" />
-          </div>
-        ) : (
-          <div className="grid grid-cols-7">
-            {calendarDays.map((day, index) => (
-              <button
-                key={index}
-                type="button"
-                onClick={() => handleDayClick(day)}
-                onKeyDown={(e) => handleKeyDown(e, day)}
-                disabled={day.isDisabled}
-                tabIndex={day.isCurrentMonth && !day.isDisabled ? 0 : -1}
-                aria-label={`${day.dayOfMonth} ${getMonthName(month)} ${year}${day.isSelected ? " - Indisponible" : ""}`}
-                aria-pressed={day.isSelected}
-                className={cn(
-                  "relative flex aspect-square items-center justify-center text-sm transition-colors",
-                  "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
-                  // Current month styling
-                  day.isCurrentMonth ? "text-foreground" : "text-muted-foreground/50",
-                  // Past day styling
-                  day.isPast && "text-muted-foreground/40",
-                  // Today styling
-                  day.isToday && !day.isSelected && "font-bold ring-1 ring-current ring-inset",
-                  // Selected styling
-                  day.isSelected &&
-                    day.isCurrentMonth &&
-                    "bg-destructive text-destructive-foreground font-semibold",
-                  // Hover styling for selectable days
-                  !day.isDisabled &&
-                    day.isCurrentMonth &&
-                    !day.isSelected &&
-                    "hover:bg-muted cursor-pointer",
-                  // Disabled styling
-                  day.isDisabled && "cursor-not-allowed opacity-50"
-                )}
-              >
-                {day.dayOfMonth}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+      ) : (
+        <Calendar
+          mode="multiple"
+          selected={selectedDatesArray}
+          onSelect={handleSelect}
+          month={displayedMonth}
+          onMonthChange={handleMonthChange}
+          locale={fr}
+          weekStartsOn={1}
+          showWeekNumber
+          onWeekNumberClick={handleWeekNumberClick}
+          disabled={(date) => {
+            // Disable past dates and dates when deadline passed
+            const isPast = date < today && date.toDateString() !== today.toDateString();
+            return isPast || isDeadlinePassed;
+          }}
+          className="w-lg rounded-lg border"
+        />
+      )}
 
       {/* Selection summary */}
       <div className="text-muted-foreground flex items-center justify-between text-sm">

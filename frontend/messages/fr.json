@@ -34,7 +34,8 @@
     "logout": "Déconnexion",
     "navigation": "Navigation",
     "more": "Plus",
-    "tasks": "Tâches"
+    "tasks": "Tâches",
+    "services": "Services"
   },
   "Auth": {
     "login": "Connexion",
@@ -133,6 +134,24 @@
     "removeMember": "Retirer le membre",
     "removeConfirm": "Êtes-vous sûr de vouloir retirer ce membre ?"
   },
+  "Profile": {
+    "title": "Mon profil",
+    "description": "Gérez vos informations personnelles et vos préférences",
+    "personalInfo": "Informations personnelles",
+    "personalInfoDescription": "Mettez à jour vos informations de profil",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "Email",
+    "phone": "Téléphone",
+    "bio": "Bio",
+    "bioPlaceholder": "Parlez-nous un peu de vous...",
+    "changePassword": "Changer le mot de passe",
+    "changePasswordDescription": "Mettez à jour votre mot de passe de connexion",
+    "currentPassword": "Mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "confirmNewPassword": "Confirmer le nouveau mot de passe",
+    "updatePassword": "Mettre à jour"
+  },
   "Notifications": {
     "title": "Notifications",
     "markAsRead": "Marquer comme lu",
@@ -141,7 +160,12 @@
     "newAssignment": "Nouvelle affectation",
     "planningPublished": "Planning publié",
     "reminder": "Rappel",
-    "serviceReminder": "Rappel de service pour demain"
+    "serviceReminder": "Rappel de service pour demain",
+    "recentNotifications": "Notifications récentes",
+    "allRead": "Toutes les notifications sont lues",
+    "markedAsRead": "Notification marquée comme lue",
+    "allMarkedAsRead": "Toutes les notifications marquées comme lues",
+    "notificationDeleted": "Notification supprimée"
   },
   "Settings": {
     "title": "Paramètres",
