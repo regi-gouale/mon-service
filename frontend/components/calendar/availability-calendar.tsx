@@ -214,7 +214,7 @@ export function AvailabilityCalendar({
             const isPast = date < today && date.toDateString() !== today.toDateString();
             return isPast || isDeadlinePassed;
           }}
-          className="w-lg rounded-lg border"
+          className="mx-auto w-lg rounded-lg border"
         />
       )}
 

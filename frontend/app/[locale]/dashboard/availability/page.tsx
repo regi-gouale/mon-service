@@ -66,6 +66,15 @@ function getCurrentMonthYear(): MonthYear {
   };
 }
 
+/**
+ * Get the first selectable month for availability.
+ * Users should select unavailabilities for the next month, not the current one.
+ */
+function getFirstSelectableMonth(): MonthYear {
+  const current = getCurrentMonthYear();
+  return getNextMonth(current);
+}
+
 function getPreviousMonth(current: MonthYear): MonthYear {
   if (current.month === 1) {
     return { year: current.year - 1, month: 12 };
@@ -131,8 +140,8 @@ export default function AvailabilityPage() {
     }
   }, [departments, selectedDepartmentId]);
 
-  // Current displayed month
-  const [currentMonth, setCurrentMonth] = useState<MonthYear>(getCurrentMonthYear);
+  // Current displayed month - start with the next month (first selectable)
+  const [currentMonth, setCurrentMonth] = useState<MonthYear>(getFirstSelectableMonth);
 
   // Selected unavailable dates
   const [selectedDates, setSelectedDates] = useState<Set<string>>(new Set());
