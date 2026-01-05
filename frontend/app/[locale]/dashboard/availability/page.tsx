@@ -11,12 +11,20 @@ import { AvailabilityCalendar } from "@/components/calendar/availability-calenda
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   useAvailabilityDeadline,
+  useDepartments,
   useMyAvailabilities,
   useUpdateMyAvailabilities,
 } from "@/hooks/useQuery";
-import type { AvailabilityDeadlineResponse, MemberAvailabilityResponse } from "@/types";
-import { IconDeviceFloppy } from "@tabler/icons-react";
+import type { AvailabilityDeadlineResponse, Department, MemberAvailabilityResponse } from "@/types";
+import { IconDeviceFloppy, IconLoader2 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -73,9 +81,28 @@ export default function AvailabilityPage() {
   const t = useTranslations("Availability");
   const tCommon = useTranslations("Common");
 
-  // TODO: Get departmentId from URL params or user context
-  // For now, we'll use a placeholder
-  const departmentId = "default-department";
+  // Fetch departments list
+  const {
+    data: departmentsData,
+    isLoading: isLoadingDepartments,
+    isError: isDepartmentsError,
+  } = useDepartments();
+
+  // Type-safe departments accessor with useMemo to prevent re-renders
+  const departments = useMemo(
+    () => (departmentsData as Department[] | undefined) ?? [],
+    [departmentsData]
+  );
+
+  // Selected department
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState<string | null>(null);
+
+  // Auto-select first department when loaded
+  useEffect(() => {
+    if (departments.length > 0 && !selectedDepartmentId) {
+      setSelectedDepartmentId(departments[0].id);
+    }
+  }, [departments, selectedDepartmentId]);
 
   // Current displayed month
   const [currentMonth, setCurrentMonth] = useState<MonthYear>(getCurrentMonthYear);
@@ -86,22 +113,25 @@ export default function AvailabilityPage() {
   // Track if there are unsaved changes
   const [hasChanges, setHasChanges] = useState(false);
 
-  // Fetch current availabilities
+  // Fetch current availabilities (only when department is selected)
   const {
     data: availabilityData,
     isLoading: isLoadingAvailabilities,
     isError: isAvailabilityError,
-  } = useMyAvailabilities(departmentId, currentMonth.year, currentMonth.month);
+  } = useMyAvailabilities(selectedDepartmentId ?? "", currentMonth.year, currentMonth.month, {
+    enabled: !!selectedDepartmentId,
+  });
 
-  // Fetch deadline info
+  // Fetch deadline info (only when department is selected)
   const { data: deadlineData, isLoading: isLoadingDeadline } = useAvailabilityDeadline(
-    departmentId,
+    selectedDepartmentId ?? "",
     currentMonth.year,
-    currentMonth.month
+    currentMonth.month,
+    { enabled: !!selectedDepartmentId }
   );
 
   // Mutation for saving availabilities
-  const updateMutation = useUpdateMyAvailabilities(departmentId);
+  const updateMutation = useUpdateMyAvailabilities(selectedDepartmentId ?? "");
 
   // Type-safe accessors
   const typedAvailabilityData = availabilityData as MemberAvailabilityResponse | undefined;
@@ -115,6 +145,12 @@ export default function AvailabilityPage() {
       setHasChanges(false);
     }
   }, [typedAvailabilityData]);
+
+  // Reset selected dates when department changes
+  useEffect(() => {
+    setSelectedDates(new Set());
+    setHasChanges(false);
+  }, [selectedDepartmentId]);
 
   // Handle date selection changes
   const handleDatesChange = useCallback((newDates: Set<string>) => {
@@ -135,6 +171,8 @@ export default function AvailabilityPage() {
 
   // Handle save
   const handleSave = useCallback(async () => {
+    if (!selectedDepartmentId) return;
+
     // Convert selected dates to the request format
     const unavailableDates = Array.from(selectedDates)
       .filter((dateStr) => {
@@ -158,7 +196,7 @@ export default function AvailabilityPage() {
     } catch {
       // Error is handled by the mutation hook
     }
-  }, [selectedDates, currentMonth, updateMutation, t]);
+  }, [selectedDates, currentMonth, updateMutation, t, selectedDepartmentId]);
 
   // Deadline info
   const isDeadlinePassed = typedDeadlineData?.isPassed ?? false;
@@ -181,6 +219,55 @@ export default function AvailabilityPage() {
     return count;
   }, [selectedDates, currentMonth]);
 
+  // Loading state for departments
+  if (isLoadingDepartments) {
+    return (
+      <div className="flex min-h-96 items-center justify-center">
+        <div className="text-center">
+          <IconLoader2 className="text-primary mx-auto mb-4 h-12 w-12 animate-spin" />
+          <p className="text-muted-foreground">{tCommon("loading")}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state for departments
+  if (isDepartmentsError) {
+    return (
+      <div className="mx-auto max-w-2xl">
+        <Card>
+          <CardContent className="py-8 text-center">
+            <p className="text-destructive">{tCommon("error")}</p>
+            <p className="text-muted-foreground mt-2 text-sm">
+              Impossible de charger les départements
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // No departments available
+  if (departments.length === 0) {
+    return (
+      <div className="mx-auto max-w-2xl">
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("title")}</CardTitle>
+          </CardHeader>
+          <CardContent className="py-8 text-center">
+            <p className="text-muted-foreground">
+              Vous n&apos;êtes membre d&apos;aucun département pour le moment.
+            </p>
+            <p className="text-muted-foreground mt-2 text-sm">
+              Contactez un administrateur pour rejoindre un département.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       {/* Page Header */}
@@ -193,15 +280,46 @@ export default function AvailabilityPage() {
         {/* Save Button */}
         <Button
           onClick={handleSave}
-          disabled={!hasChanges || isDeadlinePassed || updateMutation.isPending}
+          disabled={
+            !hasChanges || isDeadlinePassed || updateMutation.isPending || !selectedDepartmentId
+          }
         >
           <IconDeviceFloppy className="mr-2 size-4" />
           {updateMutation.isPending ? tCommon("loading") : tCommon("save")}
         </Button>
       </div>
 
+      {/* Department Selector */}
+      {departments.length > 1 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Département</CardTitle>
+            <CardDescription>
+              Sélectionnez le département pour lequel vous souhaitez gérer vos disponibilités
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Select
+              value={selectedDepartmentId ?? undefined}
+              onValueChange={setSelectedDepartmentId}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {departments.map((dept) => (
+                  <SelectItem key={dept.id} value={dept.id}>
+                    {dept.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Error State */}
-      {isAvailabilityError && (
+      {isAvailabilityError && selectedDepartmentId && (
         <Card>
           <CardContent className="py-8 text-center">
             <p className="text-destructive">{tCommon("error")}</p>

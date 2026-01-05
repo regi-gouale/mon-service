@@ -19,6 +19,8 @@ Data created:
     - Future: Departments, Members, Services (when models are available)
 """
 
+from __future__ import annotations
+
 import asyncio
 import hashlib
 import os
@@ -27,12 +29,18 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-# Add backend to path for module imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-
+from dotenv import load_dotenv
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+# Add backend to path for module imports
+backend_dir = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(backend_dir))
+
+# Load environment variables from .env file
+load_dotenv(backend_dir / ".env")
+
+# ruff: noqa: E402
 from app.core.database import async_session_maker
 from app.models import Organization, User, UserRole
 
